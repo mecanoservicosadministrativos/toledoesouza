@@ -83,17 +83,42 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 .resultado-box .rb-comp{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;font-size:11px;color:var(--text2)}
 .resultado-box .rb-comp span{background:var(--surface);border-radius:4px;padding:3px 8px}
 .footer{text-align:center;color:var(--text3);font-size:11px;padding:24px;border-top:1px solid #1e2030;margin-top:32px}
+.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.login-card{background:var(--card);border-radius:12px;padding:40px 36px;width:100%;max-width:360px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.45)}
+.login-card h1{font-size:17px;font-weight:600;letter-spacing:.4px;margin-bottom:28px;line-height:1.5;color:var(--text)}
+.login-card input{width:100%;background:var(--surface);border:1px solid #2a2d3e;color:var(--text);padding:12px 14px;border-radius:8px;font-size:14px;margin-bottom:14px;outline:none;font-family:inherit}
+.login-card input:focus{border-color:var(--blue)}
+.login-card button{width:100%;background:var(--blue);border:none;color:#07080f;font-weight:700;padding:12px 14px;border-radius:8px;font-size:14px;cursor:pointer;transition:opacity .15s}
+.login-card button:hover{opacity:.88}
+.login-error{display:none;color:var(--red);font-size:12px;margin-top:14px}
+.aviso-parcial{background:#1c1200;border:1px solid var(--amber);border-left:4px solid var(--amber);border-radius:8px;padding:10px 16px;display:none;align-items:flex-start;gap:10px;margin-bottom:14px}
+.aviso-parcial .av-icon{color:var(--amber);font-size:15px;flex-shrink:0;margin-top:1px}
+.aviso-parcial .av-body{font-size:12px;color:var(--amber);line-height:1.5}
+.aviso-parcial .av-title{font-weight:700;margin-bottom:2px}
+.aviso-parcial.visible{display:flex}
+.month-btn.parcial::after{content:'*';color:var(--amber);font-size:10px;margin-left:2px;vertical-align:super}
 @media(max-width:900px){.charts-grid{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
+
+<div class="login-screen" id="login-screen">
+  <form class="login-card" id="login-form">
+    <h1>Toledo &amp; Souza Engenharia<br>— Dashboard Executivo</h1>
+    <input type="password" id="login-password" placeholder="Senha" autocomplete="current-password" autofocus>
+    <button type="submit">Entrar</button>
+    <div class="login-error" id="login-error">Senha incorreta. Tente novamente.</div>
+  </form>
+</div>
+
+<div id="app" style="display:none">
 
 <div class="header">
   <div>
     <h1>Dashboard Executivo</h1>
     <div class="sub">Toledo &amp; Souza Engenharia Ltda</div>
   </div>
-  <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 07/06/2026 13:17</div>
+  <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 09/06/2026 14:47</div>
 </div>
 
 <div class="filters" id="filter-bar">
@@ -107,10 +132,17 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
     <h2>KPIs Principais</h2>
     <span class="period-badge" id="period-label">Jan-26 a Mai-26</span>
   </div>
+  <div class="aviso-parcial" id="aviso-parcial">
+    <div class="av-icon">&#9888;</div>
+    <div class="av-body">
+      <div class="av-title">Dados parciais — <span id="aviso-meses"></span></div>
+      Competência ainda em aberto. Os valores exibidos podem não refletir o resultado final do período.
+    </div>
+  </div>
   <div class="kpi-grid" id="kpi-grid"></div>
   <div class="resultado-box" id="resultado-box"></div>
 
-  <div class="section-header" style="margin-top:32px"><h2>Gráficos</h2></div>
+  <div class="section-header" style="margin-top:32px"><h2>Gráficos</h2><div class="aviso-parcial" id="aviso-parcial-graf" style="margin-bottom:0;padding:6px 12px;font-size:11px"><div class="av-icon" style="font-size:13px">&#9888;</div><div class="av-body" style="font-size:11px">Inclui <span id="aviso-meses-graf"></span> — dados parciais</div></div></div>
   <div class="charts-grid">
     <div class="chart-card">
       <div class="chart-title">Receita vs Lucro Líquido</div>
@@ -170,24 +202,55 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 </div>
 
 <div class="footer">
-  DRE: Jan-26 a Abr-26 | DFC: Jan-26 a Mai-26 | APIs consultadas em 07/06/2026 13:17<br>
+  DRE: Jan-26 a Mai-26 | DFC: Jan-26 a Mai-26 | APIs consultadas em 09/06/2026 14:47<br>
   Toledo &amp; Souza Engenharia Ltda — Dashboard Executivo
 </div>
 <div id="tooltip"></div>
 
+</div>
+
 <script>
-const DRE = {"Jan-26": {"receita_bruta": 122507.81, "impostos": -24062.84, "receita_liquida": 98444.97, "csp": -7529.02, "cmc_vendas": -13919.99, "outros_custos": -669.62, "margem_bruta": 76326.34, "desp_var": -10417.54, "recup_desp_var": 89.7, "margem_contribuicao": 65998.5, "desp_vendas": -34630.76, "desp_pessoal": -87032.57, "desp_adm": -42135.6, "ebitda": -97800.43, "rec_fin": 0.0, "desp_fin": -197.79, "lair": -97998.22, "outros_tributos": -48.18, "lucro_liquido": -98046.4, "ativos": -4717.36, "servicos": -38195.0, "resultado": -140958.76}, "Fev-26": {"receita_bruta": 100939.01, "impostos": -19501.23, "receita_liquida": 81437.78, "csp": -7777.2, "cmc_vendas": -6320.59, "outros_custos": -626.57, "margem_bruta": 66713.42, "desp_var": -4112.91, "recup_desp_var": 877.49, "margem_contribuicao": 63478.0, "desp_vendas": -39785.97, "desp_pessoal": -67430.94, "desp_adm": -26669.35, "ebitda": -70408.26, "rec_fin": 0.0, "desp_fin": -711.76, "lair": -71120.02, "outros_tributos": -490.81, "lucro_liquido": -71610.83, "ativos": -982.04, "servicos": -40540.0, "resultado": -113132.87}, "Mar-26": {"receita_bruta": 77325.29, "impostos": -12132.45, "receita_liquida": 65192.84, "csp": -9678.45, "cmc_vendas": -7976.02, "outros_custos": -324.57, "margem_bruta": 47213.81, "desp_var": -897.27, "recup_desp_var": 390.0, "margem_contribuicao": 46706.54, "desp_vendas": -46998.05, "desp_pessoal": -67346.04, "desp_adm": -22669.25, "ebitda": -90306.81, "rec_fin": 0.02, "desp_fin": -112.57, "lair": -90419.36, "outros_tributos": -796.25, "lucro_liquido": -91215.61, "ativos": -25788.26, "servicos": -35540.0, "resultado": -152543.87}, "Abr-26": {"receita_bruta": 195572.51, "impostos": -21090.76, "receita_liquida": 174481.75, "csp": -17651.12, "cmc_vendas": -17026.8, "outros_custos": -2195.96, "margem_bruta": 137607.87, "desp_var": -4255.84, "recup_desp_var": 291.19, "margem_contribuicao": 133643.22, "desp_vendas": -48119.33, "desp_pessoal": -86258.11, "desp_adm": -17674.4, "ebitda": -18408.62, "rec_fin": 558.61, "desp_fin": -1029.0, "lair": -18879.01, "outros_tributos": -569.64, "lucro_liquido": -19448.65, "ativos": -23717.04, "servicos": -35540.0, "resultado": -78705.69}};
-const DFC = {"Jan-26": {"op_total": 197664.06, "entradas_op": 585487.0, "outras_entradas": 7121.81, "impostos": -125925.41, "custos": -107300.87, "desp_pessoal": -114541.89, "desp_mkt": -20404.95, "desp_adm": -26771.63, "desp_fin": 0.0, "investimentos": -6970.69, "financiamentos": -40130.0, "var_caixa": 150563.37}, "Fev-26": {"op_total": -6082.93, "entradas_op": 240494.32, "outras_entradas": 6300.88, "impostos": -30185.03, "custos": -57530.28, "desp_pessoal": -77363.23, "desp_mkt": -51673.13, "desp_adm": -35671.57, "desp_fin": -454.89, "investimentos": -982.04, "financiamentos": -40900.0, "var_caixa": -47964.97}, "Mar-26": {"op_total": -232071.87, "entradas_op": 24018.05, "outras_entradas": 7972.85, "impostos": -13082.54, "custos": -111890.9, "desp_pessoal": -67341.14, "desp_mkt": -46790.86, "desp_adm": -24928.79, "desp_fin": -28.54, "investimentos": -8605.49, "financiamentos": -35540.0, "var_caixa": -276217.36}, "Abr-26": {"op_total": -185801.32, "entradas_op": 133451.43, "outras_entradas": 5753.97, "impostos": -20044.82, "custos": -178881.52, "desp_pessoal": -64475.6, "desp_mkt": -41503.2, "desp_adm": -20057.19, "desp_fin": -44.39, "investimentos": -18234.45, "financiamentos": -35540.0, "var_caixa": -239575.77}, "Mai-26": {"op_total": -16053.55, "entradas_op": 260266.17, "outras_entradas": 33438.47, "impostos": -16453.26, "custos": -140782.4, "desp_pessoal": -88592.16, "desp_mkt": -43588.69, "desp_adm": -18339.38, "desp_fin": -2002.3, "investimentos": -22665.36, "financiamentos": -35540.0, "var_caixa": -74258.91}};
+const DRE = {"Jan-26": {"receita_bruta": 122507.81, "impostos": -24062.84, "receita_liquida": 98444.97, "csp": -7529.0196, "cmc_vendas": -13919.9944, "outros_custos": -669.62, "margem_bruta": 76326.336, "desp_var": -18794.34, "recup_desp_var": 89.7, "margem_contribuicao": 57621.6959, "desp_vendas": -26253.9574, "desp_pessoal": -87032.573, "desp_adm": -42135.6, "ebitda": -97800.4344, "rec_fin": 7121.81, "desp_fin": -197.79, "lair": -90876.4144, "outros_tributos": -48.18, "lucro_liquido": -90924.5944, "ativos": -4717.36, "servicos": -38195.0, "resultado": -133836.9544}, "Fev-26": {"receita_bruta": 100939.01, "impostos": -19501.23, "receita_liquida": 81437.78, "csp": -7777.2046, "cmc_vendas": -6320.5872, "outros_custos": -626.5699, "margem_bruta": 66713.4182, "desp_var": -11784.96, "recup_desp_var": 877.49, "margem_contribuicao": 55805.9482, "desp_vendas": -32113.9173, "desp_pessoal": -67430.938, "desp_adm": -26669.35, "ebitda": -70408.2571, "rec_fin": 6170.72, "desp_fin": -711.76, "lair": -64949.2971, "outros_tributos": -490.81, "lucro_liquido": -65440.1071, "ativos": -982.04, "servicos": -40540.0, "resultado": -106962.1471}, "Mar-26": {"receita_bruta": 77325.29, "impostos": -3900.08, "receita_liquida": 73425.21, "csp": -9678.4482, "cmc_vendas": -7976.0163, "outros_custos": -324.57, "margem_bruta": 55446.1755, "desp_var": -8331.1, "recup_desp_var": 390.0, "margem_contribuicao": 47505.0755, "desp_vendas": -39564.2217, "desp_pessoal": -67346.0401, "desp_adm": -22669.25, "ebitda": -82074.4363, "rec_fin": 7582.87, "desp_fin": -112.57, "lair": -74604.1363, "outros_tributos": -9028.62, "lucro_liquido": -83632.7563, "ativos": -25788.26, "servicos": -35540.0, "resultado": -144961.0163}, "Abr-26": {"receita_bruta": 195572.51, "impostos": -21090.76, "receita_liquida": 174481.75, "csp": -17651.1179, "cmc_vendas": -17026.8027, "outros_custos": -2195.96, "margem_bruta": 137607.8694, "desp_var": -13196.9453, "recup_desp_var": 291.19, "margem_contribuicao": 124702.1141, "desp_vendas": -39178.2237, "desp_pessoal": -86258.1131, "desp_adm": -17674.4, "ebitda": -18408.6227, "rec_fin": 6021.39, "desp_fin": -1029.0, "lair": -13416.2327, "outros_tributos": -569.64, "lucro_liquido": -13985.8727, "ativos": -23717.04, "servicos": -35540.0, "resultado": -73242.9127}, "Mai-26": {"receita_bruta": 2401385.75, "impostos": -36100.98, "receita_liquida": 2365284.77, "csp": -11854.8296, "cmc_vendas": -254273.6654, "outros_custos": -442.44, "margem_bruta": 2098713.835, "desp_var": -5893.79, "recup_desp_var": 2458.2, "margem_contribuicao": 2095278.245, "desp_vendas": -25569.0374, "desp_pessoal": -55107.043, "desp_adm": -15302.42, "ebitda": 1999299.7446, "rec_fin": 2471.32, "desp_fin": -1109.35, "lair": 2000661.7146, "outros_tributos": -1289.61, "lucro_liquido": 1999372.1046, "ativos": -83116.25, "servicos": -35540.0, "resultado": 1880715.8546}};
+const DFC = {"Jan-26": {"op_total": 197664.06, "entradas_op": 585487.0, "rec_financ": 7121.81, "outras_entradas": 0.0, "impostos": -125925.41, "custos": -107300.8747, "desp_pessoal": -114541.888, "desp_mkt": -20404.9474, "desp_adm": -26771.63, "desp_fin": 0.0001, "investimentos": -6970.69, "financiamentos": -40130.0, "var_caixa": 150563.37}, "Fev-26": {"op_total": -6082.93, "entradas_op": 240494.32, "rec_financ": 6170.72, "outras_entradas": 130.16, "impostos": -30185.03, "custos": -57530.2846, "desp_pessoal": -77363.228, "desp_mkt": -51673.1274, "desp_adm": -35671.57, "desp_fin": -454.89, "investimentos": -982.04, "financiamentos": -40900.0, "var_caixa": -47964.97}, "Mar-26": {"op_total": -232071.87, "entradas_op": 24018.05, "rec_financ": 7582.85, "outras_entradas": 390.0, "impostos": -13082.54, "custos": -111890.9046, "desp_pessoal": -67341.138, "desp_mkt": -46790.8574, "desp_adm": -24928.79, "desp_fin": -28.54, "investimentos": -8605.49, "financiamentos": -35540.0, "var_caixa": -276217.36}, "Abr-26": {"op_total": -185801.32, "entradas_op": 133451.43, "rec_financ": 5462.78, "outras_entradas": 291.19, "impostos": -20044.82, "custos": -178881.5182, "desp_pessoal": -64475.6001, "desp_mkt": -41503.2017, "desp_adm": -20091.54, "desp_fin": -10.04, "investimentos": -18234.45, "financiamentos": -35540.0, "var_caixa": -239575.77}, "Mai-26": {"op_total": -16053.55, "entradas_op": 260266.17, "rec_financ": 0.0, "outras_entradas": 33438.47, "impostos": -16453.26, "custos": -140782.4029, "desp_pessoal": -88592.1581, "desp_mkt": -43588.689, "desp_adm": -19079.22, "desp_fin": -1262.46, "investimentos": -22665.36, "financiamentos": -35540.0, "var_caixa": -74258.91}};
 const ESTOQUE = {"Jan-26": 1090172.45, "Fev-26": 1160125.45, "Mar-26": 1259729.32, "Abr-26": 1409564.8, "Mai-26": 1019767.77};
 const CAIXA = {"Jan-26": {"inicial": 856739.09, "final": 1007302.46}, "Fev-26": {"inicial": 1007302.46, "final": 959337.49}, "Mar-26": {"inicial": 959337.49, "final": 683120.13}, "Abr-26": {"inicial": 683120.13, "final": 419022.48}, "Mai-26": {"inicial": 419022.48, "final": 242856.25}};
-const PIPEDRIVE = {"erro": false, "total": 1473353.02, "qtd": 14, "taxa_usd": 5.1671};
+const PIPEDRIVE = {"erro": false, "total": 1486268.97, "qtd": 14, "taxa_usd": 5.1887};
 const OMIE = {"erro": false, "total": 3571424.18, "qtd": 37};
-const MESES_DRE = ["Jan-26", "Fev-26", "Mar-26", "Abr-26"];
+const MESES_DRE = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26"];
 const MESES_DFC = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26"];
 const MESES_ALL = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26"];
 const NUM_COLABORADORES = 15;
 const CAIXA_MINIMO = 200000;
+const MESES_PARCIAIS = ["Mai-26"];
 
+
+// ─── LOGIN ──────────────────────────────────────────────────────────────────
+const PASSWORD_HASH = '281472d5646276412f70b4bdf59f3ec7c312deddd64b73ea0d6f243ac249a1ce';
+
+async function sha256Hex(text) {
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+
+async function tryLogin(evt) {
+  evt.preventDefault();
+  const input = document.getElementById('login-password');
+  const err   = document.getElementById('login-error');
+  const hash  = await sha256Hex(input.value);
+  if (hash === PASSWORD_HASH) {
+    err.style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    buildButtons();
+    refresh();
+  } else {
+    err.style.display = 'block';
+    input.value = '';
+    input.focus();
+  }
+}
+
+document.getElementById('login-form').addEventListener('submit', tryLogin);
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
 let selectedMonths = MESES_ALL.slice();
@@ -635,6 +698,10 @@ function drawCaixa(period) {
 }
 
 // ─── RENDER CHARTS ──────────────────────────────────────────────────────────
+function _parcSuffix(meses) {
+  return meses.some(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; }) ? ' · ⚠ Parcial' : '';
+}
+
 function renderCharts(period) {
   var dreMes = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; });
   var dfcMes = period.filter(function(m) { return MESES_DFC.indexOf(m) >= 0; });
@@ -645,20 +712,20 @@ function renderCharts(period) {
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       dreMes.map(function(m) { return DRE[m].lucro_liquido; }),
       COLORS.blue, COLORS.red,
-      'ins1', 'Lucro Líquido: ' + dreMes.map(function(m) { return fmtR(DRE[m].lucro_liquido,true); }).join(' | '));
+      'ins1', 'Lucro Líquido: ' + dreMes.map(function(m) { return fmtR(DRE[m].lucro_liquido,true); }).join(' | ') + _parcSuffix(dreMes));
 
     // C2 MC%
     var mcPcts = dreMes.map(function(m) { return DRE[m].margem_contribuicao / DRE[m].receita_bruta * 100; });
     var mcAvg = dreMes.reduce(function(s,m) { return s+DRE[m].margem_contribuicao; },0) /
                 dreMes.reduce(function(s,m) { return s+DRE[m].receita_bruta; },0) * 100;
-    drawArea('c2', dreMes, mcPcts, COLORS.teal, true, null, 'ins2', 'MC média: ' + fmtPct(mcAvg));
+    drawArea('c2', dreMes, mcPcts, COLORS.teal, true, null, 'ins2', 'MC média: ' + fmtPct(mcAvg) + _parcSuffix(dreMes));
 
     // C4 Estoque vs Receita
     drawBarLine('c4', dreMes,
       dreMes.map(function(m) { return ESTOQUE[m] || 0; }),
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       COLORS.amber, COLORS.blue,
-      'ins4', 'Razão Estoque/RB: ' + dreMes.map(function(m) { return fmtN((ESTOQUE[m]||0)/DRE[m].receita_bruta)+'x'; }).join(' | '));
+      'ins4', 'Razão Estoque/RB: ' + dreMes.map(function(m) { return fmtN((ESTOQUE[m]||0)/DRE[m].receita_bruta)+'x'; }).join(' | ') + _parcSuffix(dreMes));
 
     // C5 Desp Venda vs Receita
     var dvPct5 = dreMes.reduce(function(s,m){ return s+Math.abs(DRE[m].desp_vendas); },0) /
@@ -667,7 +734,7 @@ function renderCharts(period) {
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       dreMes.map(function(m) { return Math.abs(DRE[m].desp_vendas); }),
       COLORS.blue, COLORS.red,
-      'ins5', 'Desp. Venda: ' + fmtPct(dvPct5) + ' da Receita no período');
+      'ins5', 'Desp. Venda: ' + fmtPct(dvPct5) + ' da Receita no período' + _parcSuffix(dreMes));
 
     // C6 Desp Var vs Receita
     var dvPct6 = dreMes.reduce(function(s,m){ return s+Math.abs(DRE[m].desp_var); },0) /
@@ -676,7 +743,7 @@ function renderCharts(period) {
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       dreMes.map(function(m) { return Math.abs(DRE[m].desp_var); }),
       COLORS.blue, COLORS.amber,
-      'ins6', 'Desp. Variáveis: ' + fmtPct(dvPct6) + ' da Receita no período');
+      'ins6', 'Desp. Variáveis: ' + fmtPct(dvPct6) + ' da Receita no período' + _parcSuffix(dreMes));
   }
 
   // C3 Caixa (sempre todos)
@@ -692,7 +759,7 @@ function renderCharts(period) {
       dfcMes.map(function(m) { return DFC[m].entradas_op; }),
       dfcMes.map(function(m) { return MESES_DRE.indexOf(m)>=0 ? Math.abs(DRE[m].desp_vendas) : null; }),
       COLORS.green, COLORS.red,
-      'ins7', dvPct7 ? 'Desp. Venda: '+fmtPct(dvPct7)+' das Entradas Op.' : 'Entradas Operacionais por mês');
+      'ins7', (dvPct7 ? 'Desp. Venda: '+fmtPct(dvPct7)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes));
 
     var dvPct8 = hasDRE7 ?
       dfcMes.filter(function(m){ return MESES_DRE.indexOf(m)>=0; }).reduce(function(s,m){ return s+Math.abs(DRE[m].desp_var); },0) /
@@ -702,7 +769,7 @@ function renderCharts(period) {
       dfcMes.map(function(m) { return DFC[m].entradas_op; }),
       dfcMes.map(function(m) { return MESES_DRE.indexOf(m)>=0 ? Math.abs(DRE[m].desp_var) : null; }),
       COLORS.green, COLORS.amber,
-      'ins8', dvPct8 ? 'Desp. Variáveis: '+fmtPct(dvPct8)+' das Entradas Op.' : 'Entradas Operacionais por mês');
+      'ins8', (dvPct8 ? 'Desp. Variáveis: '+fmtPct(dvPct8)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes));
   }
 }
 
@@ -781,6 +848,7 @@ function renderDFC(period) {
   var rows = [
     { label:'1 - OPERAÇÕES', isHeader:true, field:'op_total' },
     { label:'&nbsp;&nbsp;&nbsp;1.1 Entradas Operacionais', field:'entradas_op' },
+    { label:'&nbsp;&nbsp;&nbsp;1.2 Receitas Financeiras', field:'rec_financ' },
     { label:'&nbsp;&nbsp;&nbsp;1.3 Outras Entradas', field:'outras_entradas' },
     { label:'&nbsp;&nbsp;&nbsp;2.2 Impostos', field:'impostos' },
     { label:'&nbsp;&nbsp;&nbsp;2.3 Custos', field:'custos' },
@@ -958,6 +1026,20 @@ function refresh() {
   });
   document.getElementById('btn-all').classList.toggle('active', selectedMonths.length === MESES_ALL.length);
   document.getElementById('period-label').textContent = periodLabel(activePeriod);
+
+  // Aviso de dados parciais
+  var parciaisAtivos = activePeriod.filter(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; });
+  var temParcial = parciaisAtivos.length > 0;
+  var labelParcial = parciaisAtivos.join(', ');
+  var av = document.getElementById('aviso-parcial');
+  var avG = document.getElementById('aviso-parcial-graf');
+  av.classList.toggle('visible', temParcial);
+  avG.classList.toggle('visible', temParcial);
+  if (temParcial) {
+    document.getElementById('aviso-meses').textContent = labelParcial;
+    document.getElementById('aviso-meses-graf').textContent = labelParcial;
+  }
+
   renderKPIs(activePeriod);
   renderResultado(activePeriod);
   renderCharts(activePeriod);
@@ -997,17 +1079,18 @@ function buildButtons() {
   var bar = document.getElementById('filter-bar');
   MESES_ALL.forEach(function(m) {
     var btn = document.createElement('button');
-    btn.className = 'btn-filter month-btn selected';
+    var isParcial = MESES_PARCIAIS.indexOf(m) >= 0;
+    btn.className = 'btn-filter month-btn selected' + (isParcial ? ' parcial' : '');
     btn.setAttribute('data-period', m);
     btn.textContent = m;
+    if (isParcial) btn.title = 'Dados parciais — competência em aberto';
     btn.onclick = function() { toggleMonth(m); };
     bar.appendChild(btn);
   });
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-  buildButtons();
-  refresh();
+  document.getElementById('login-password').focus();
 });
 
 var _rt;
