@@ -39,11 +39,9 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .kpi-card.teal::before{background:var(--teal)}
 .kpi-card.orange::before{background:var(--orange)}
 .kpi-card.indigo::before{background:var(--indigo)}
-.kpi-card.purple::before{background:var(--purple)}
-.kpi-card.orange,.kpi-card.indigo,.kpi-card.purple{border-left:3px solid}
+.kpi-card.orange,.kpi-card.indigo{border-left:3px solid}
 .kpi-card.orange{border-left-color:var(--orange)}
 .kpi-card.indigo{border-left-color:var(--indigo)}
-.kpi-card.purple{border-left-color:var(--purple)}
 .kpi-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
 .kpi-value{font-size:22px;font-weight:700;line-height:1}
 .kpi-sub{font-size:11px;color:var(--text2);margin-top:6px}
@@ -120,7 +118,7 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
     <h1>Dashboard Executivo</h1>
     <div class="sub">Toledo &amp; Souza Engenharia Ltda</div>
   </div>
-  <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 10/08/2026 10:38</div>
+  <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 04/08/2026 10:39</div>
 </div>
 
 <div class="filters" id="filter-bar">
@@ -206,7 +204,7 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 </div>
 
 <div class="footer">
-  DRE: Jan-26 a Jul-26 | DFC: Jan-26 a Jul-26 | APIs consultadas em 10/08/2026 10:38<br>
+  DRE: Jan-26 a Jul-26 | DFC: Jan-26 a Jul-26 | APIs consultadas em 04/08/2026 10:39<br>
   Toledo &amp; Souza Engenharia Ltda — Dashboard Executivo
 </div>
 <div id="tooltip"></div>
@@ -218,9 +216,8 @@ const DRE = {"Jan-26": {"receita_bruta": 122507.81, "impostos": -24062.84, "rece
 const DFC = {"Jan-26": {"op_total": 197582.66, "entradas_op": 585487.0, "rec_financ": 7121.81, "outras_entradas": 0.0, "impostos": -125925.41, "custos": -107300.8747, "desp_pessoal": -114541.888, "desp_mkt": -20404.9474, "desp_adm": -26771.63, "desp_fin": -81.4, "investimentos": -6970.69, "financiamentos": -40130.0, "var_caixa": 150481.97}, "Fev-26": {"op_total": -6164.33, "entradas_op": 239746.99, "rec_financ": 6918.05, "outras_entradas": 130.16, "impostos": -30185.03, "custos": -57530.2846, "desp_pessoal": -77363.228, "desp_mkt": -51673.1274, "desp_adm": -35671.57, "desp_fin": -536.29, "investimentos": -982.04, "financiamentos": -40900.0, "var_caixa": -48046.37}, "Mar-26": {"op_total": -224129.1, "entradas_op": 32042.22, "rec_financ": 7582.85, "outras_entradas": 390.0, "impostos": -13082.54, "custos": -111890.9046, "desp_pessoal": -67341.138, "desp_mkt": -46790.8574, "desp_adm": -24928.79, "desp_fin": -109.94, "investimentos": -8605.49, "financiamentos": -35540.0, "var_caixa": -268274.59}, "Abr-26": {"op_total": -210404.6, "entradas_op": 108929.55, "rec_financ": 5462.78, "outras_entradas": 291.19, "impostos": -20044.82, "custos": -178881.5182, "desp_pessoal": -64475.6001, "desp_mkt": -41503.2017, "desp_adm": -20091.54, "desp_fin": -91.44, "investimentos": -18234.45, "financiamentos": -35540.0, "var_caixa": -264179.05}, "Mai-26": {"op_total": -61395.11, "entradas_op": 213088.37, "rec_financ": 2636.95, "outras_entradas": 33438.47, "impostos": -16453.26, "custos": -140782.4029, "desp_pessoal": -88592.1581, "desp_mkt": -43450.659, "desp_adm": -19924.86, "desp_fin": -475.78, "investimentos": -22665.36, "financiamentos": -35540.0, "var_caixa": -119600.47}, "Jun-26": {"op_total": -49665.02, "entradas_op": 197760.35, "rec_financ": 10199.05, "outras_entradas": 380000.0, "impostos": -428529.31, "custos": -70164.4532, "desp_pessoal": -67936.1051, "desp_mkt": -48217.5417, "desp_adm": -22673.87, "desp_fin": -103.14, "investimentos": -17581.93, "financiamentos": -32990.0, "var_caixa": -100236.95}, "Jul-26": {"op_total": 2018764.86, "entradas_op": 2436441.91, "rec_financ": 3010.29, "outras_entradas": 1767.0, "impostos": -140440.28, "custos": -65083.945, "desp_pessoal": -83758.125, "desp_mkt": -92008.15, "desp_adm": -40627.91, "desp_fin": -120.6, "investimentos": -18852.32, "financiamentos": -412990.0, "var_caixa": 1586922.54}};
 const ESTOQUE = {"Jan-26": 1097922.64, "Fev-26": 1166892.5, "Mar-26": 1266051.32, "Abr-26": 1486700.42, "Mai-26": 1291853.96, "Jun-26": 1358891.9, "Jul-26": 1339832.49};
 const CAIXA = {"Jan-26": {"inicial": 856657.69, "final": 1007139.66}, "Fev-26": {"inicial": 1007139.66, "final": 959093.29}, "Mar-26": {"inicial": 959093.29, "final": 682794.53}, "Abr-26": {"inicial": 682794.53, "final": 418615.48}, "Mai-26": {"inicial": 418615.48, "final": 242207.29}, "Jun-26": {"inicial": 242207.29, "final": 141970.34}, "Jul-26": {"inicial": 141970.34, "final": 1728597.89}};
-const PIPEDRIVE = {"erro": false, "total": 438607.97, "qtd": 10, "taxa_usd": 5.0902};
-const OMIE = {"erro": false, "total": 1289573.8, "qtd": 6};
-const CONTAS_RECEBER = {"erro": false, "total": 548228.84, "qtd": 20};
+const PIPEDRIVE = {"erro": false, "total": 478407.97, "qtd": 11, "taxa_usd": 5.0935};
+const OMIE = {"erro": false, "total": 1370017.8, "qtd": 5};
 const MESES_DRE = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26"];
 const MESES_DFC = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26"];
 const MESES_ALL = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26"];
@@ -395,12 +392,6 @@ function renderKPIs(period) {
     PIPEDRIVE.erro ? '<span style="color:var(--red);font-size:14px">Erro API</span>' : fmtR(PIPEDRIVE.total, true),
     PIPEDRIVE.erro ? 'Erro na API' : PIPEDRIVE.qtd + ' negócios' + (PIPEDRIVE.taxa_usd ? ' · USD/BRL ' + PIPEDRIVE.taxa_usd.toFixed(2).replace('.',',') : ''),
     'TEMPO REAL');
-
-  // 18 — Contas a Receber (Omie) — títulos em aberto com NF emitida
-  html += card('purple', 'Contas a Receber (Faturado)',
-    CONTAS_RECEBER.erro ? '<span style="color:var(--red);font-size:14px">Erro API</span>' : fmtR(CONTAS_RECEBER.total, true),
-    CONTAS_RECEBER.erro ? 'Erro na API' : CONTAS_RECEBER.qtd + ' títulos com NF emitida',
-    CONTAS_RECEBER.erro ? '' : 'TEMPO REAL');
 
   // 1 — Receita Bruta
   html += card('blue','Receita Bruta', k.rb?fmtR(k.rb,true):nd, k.rb?fmtR(k.rb):'', '');
