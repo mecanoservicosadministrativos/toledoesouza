@@ -93,12 +93,13 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 .login-card button{width:100%;background:var(--blue);border:none;color:#07080f;font-weight:700;padding:12px 14px;border-radius:8px;font-size:14px;cursor:pointer;transition:opacity .15s}
 .login-card button:hover{opacity:.88}
 .login-error{display:none;color:var(--red);font-size:12px;margin-top:14px}
-.aviso-parcial{background:#1c1200;border:1px solid var(--amber);border-left:4px solid var(--amber);border-radius:8px;padding:10px 16px;display:none;align-items:flex-start;gap:10px;margin-bottom:14px}
+.aviso-parcial{background:#1c1200;border:2px solid var(--amber);border-radius:8px;padding:10px 16px;display:none;align-items:flex-start;gap:10px;margin-bottom:14px}
 .aviso-parcial .av-icon{color:var(--amber);font-size:15px;flex-shrink:0;margin-top:1px}
 .aviso-parcial .av-body{font-size:12px;color:var(--amber);line-height:1.5}
 .aviso-parcial .av-title{font-weight:700;margin-bottom:2px}
 .aviso-parcial.visible{display:flex}
-.month-btn.parcial::after{content:'*';color:var(--amber);font-size:10px;margin-left:2px;vertical-align:super}
+.badge-parcial{display:inline-block;background:var(--amber);color:#1c1200;font-size:8px;font-weight:700;border-radius:4px;padding:1px 4px;margin-left:4px;letter-spacing:.3px;vertical-align:middle}
+.month-btn.parcial::after{content:'PARCIAL';display:inline-block;background:var(--amber);color:#1c1200;font-size:8px;font-weight:700;border-radius:4px;padding:1px 4px;margin-left:4px;letter-spacing:.3px;vertical-align:middle}
 @media(max-width:900px){.charts-grid{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -120,7 +121,7 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
     <h1>Dashboard Executivo</h1>
     <div class="sub">Toledo &amp; Souza Engenharia Ltda</div>
   </div>
-  <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 10/09/2026 18:48</div>
+  <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 12/10/2026 13:22</div>
 </div>
 
 <div class="filters" id="filter-bar">
@@ -141,6 +142,13 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
       Competência ainda em aberto. Os valores exibidos podem não refletir o resultado final do período.
     </div>
   </div>
+  <div class="aviso-parcial" id="aviso-irpj">
+    <div class="av-icon">&#9888;</div>
+    <div class="av-body">
+      <div class="av-title">Sem provisão de IRPJ/CSLL — <span id="aviso-irpj-meses"></span></div>
+      O trimestre (Jul–Set) ainda não tem a provisão de IRPJ/CSLL lançada. Lucro Líquido, Margem de Contribuição ajustada, Break-even e Resultado do período não refletem o imposto trimestral.
+    </div>
+  </div>
   <div class="kpi-grid" id="kpi-grid"></div>
   <div class="resultado-box" id="resultado-box"></div>
 
@@ -152,7 +160,7 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
       <div class="chart-wrap"><canvas id="c1" height="220"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Margem de Contribuição (%)</div>
+      <div class="chart-title">Margem de Contribuição ajustada (%) <span style="font-weight:400;font-size:.8em">· MC oficial − Outros Tributos</span></div>
       <div class="chart-insight" id="ins2"></div>
       <div class="chart-wrap"><canvas id="c2" height="220"></canvas></div>
     </div>
@@ -206,7 +214,7 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 </div>
 
 <div class="footer">
-  DRE: Jan-26 a Ago-26 | DFC: Jan-26 a Ago-26 | APIs consultadas em 10/09/2026 18:48<br>
+  DRE: Jan-26 a Set-26 | DFC: Jan-26 a Set-26 | APIs consultadas em 12/10/2026 13:22<br>
   Toledo &amp; Souza Engenharia Ltda — Dashboard Executivo
 </div>
 <div id="tooltip"></div>
@@ -214,21 +222,22 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 </div>
 
 <script>
-const DRE = {"Jan-26": {"receita_bruta": 122507.81, "impostos": -24062.84, "receita_liquida": 98444.97, "csp": -7529.0196, "cmc_vendas": -13874.0864, "outros_custos": -669.62, "margem_bruta": 76372.244, "desp_var": -28618.9401, "recup_desp_var": 0.0, "margem_contribuicao": 47753.3039, "desp_vendas": -20029.3573, "desp_pessoal": -83432.573, "desp_adm": -42135.6, "ebitda": -97844.2264, "rec_fin": 7121.81, "desp_fin": -279.19, "lair": -91001.6064, "outros_tributos": -48.18, "lucro_liquido": -91049.7864, "ativos": -4717.36, "servicos": -38195.0, "distribuicao_lucros": -38195.0, "resultado": -133962.1464}, "Fev-26": {"receita_bruta": 81306.67, "impostos": -18784.65, "receita_liquida": 62522.02, "csp": -7580.8846, "cmc_vendas": -6320.5872, "outros_custos": -626.5699, "margem_bruta": 47993.9782, "desp_var": -11784.96, "recup_desp_var": 877.49, "margem_contribuicao": 37086.5082, "desp_vendas": -32113.9173, "desp_pessoal": -67430.938, "desp_adm": -25478.1, "ebitda": -87936.4471, "rec_fin": 6170.72, "desp_fin": -793.16, "lair": -82558.8871, "outros_tributos": 0.0, "lucro_liquido": -82558.8871, "ativos": -982.04, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": -124080.9271}, "Mar-26": {"receita_bruta": 77325.29, "impostos": -3439.04, "receita_liquida": 73886.25, "csp": -9678.4482, "cmc_vendas": -7976.0163, "outros_custos": -324.57, "margem_bruta": 55907.2155, "desp_var": -10166.49, "recup_desp_var": 390.0, "margem_contribuicao": 46130.7255, "desp_vendas": -38814.2217, "desp_pessoal": -67346.0401, "desp_adm": -22669.25, "ebitda": -82698.7863, "rec_fin": 7582.87, "desp_fin": -193.97, "lair": -75309.8863, "outros_tributos": -9489.66, "lucro_liquido": -84799.5463, "ativos": -25788.26, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -146127.8063}, "Abr-26": {"receita_bruta": 195572.51, "impostos": -21090.76, "receita_liquida": 174481.75, "csp": -12418.6179, "cmc_vendas": -17214.0108, "outros_custos": -2195.96, "margem_bruta": 142653.1613, "desp_var": -28538.4953, "recup_desp_var": 291.19, "margem_contribuicao": 114405.856, "desp_vendas": -39862.7137, "desp_pessoal": -76526.683, "desp_adm": -17674.4, "ebitda": -19657.9408, "rec_fin": 6021.39, "desp_fin": -1110.4, "lair": -14746.9508, "outros_tributos": -569.64, "lucro_liquido": -15316.5908, "ativos": -23717.04, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -74573.6308}, "Mai-26": {"receita_bruta": 2401385.75, "impostos": -435222.57, "receita_liquida": 1966163.18, "csp": -12060.6282, "cmc_vendas": -273379.8389, "outros_custos": -560.38, "margem_bruta": 1680162.3329, "desp_var": -14214.72, "recup_desp_var": 2458.2, "margem_contribuicao": 1668405.8129, "desp_vendas": -24730.1317, "desp_pessoal": -81963.7801, "desp_adm": -22515.92, "ebitda": 1539195.9811, "rec_fin": 3030.07, "desp_fin": -1282.61, "lair": 1540943.4411, "outros_tributos": -1289.61, "lucro_liquido": 1539653.8311, "ativos": -66493.0, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 1437620.8311}, "Jun-26": {"receita_bruta": 231605.23, "impostos": -44114.96, "receita_liquida": 187490.27, "csp": -47079.87, "cmc_vendas": -11989.345, "outros_custos": -1640.87, "margem_bruta": 126780.185, "desp_var": -18670.4799, "recup_desp_var": 9539.1, "margem_contribuicao": 117648.8051, "desp_vendas": -41227.8301, "desp_pessoal": -87483.27, "desp_adm": -33567.21, "ebitda": -44629.505, "rec_fin": 1642.39, "desp_fin": -288.3, "lair": -43275.415, "outros_tributos": -96936.05, "lucro_liquido": -140211.465, "ativos": -958.68, "servicos": 344460.0, "distribuicao_lucros": -35540.0, "resultado": 203289.855}, "Jul-26": {"receita_bruta": 509319.44, "impostos": -102106.08, "receita_liquida": 407213.36, "csp": -24432.665, "cmc_vendas": -54279.0764, "outros_custos": -6529.17, "margem_bruta": 321972.4487, "desp_var": -88422.9798, "recup_desp_var": 4148.79, "margem_contribuicao": 237698.2589, "desp_vendas": -119749.6102, "desp_pessoal": -112730.5751, "desp_adm": -31930.87, "ebitda": -26712.7964, "rec_fin": 10617.94, "desp_fin": -333.56, "lair": -15799.9164, "outros_tributos": -18.75, "lucro_liquido": -15818.6664, "ativos": -18507.16, "servicos": -415540.0, "distribuicao_lucros": -35540.0, "resultado": -449865.8264}, "Ago-26": {"receita_bruta": 1169189.96, "impostos": -30631.8, "receita_liquida": 1138558.16, "csp": -18209.21, "cmc_vendas": -216046.8749, "outros_custos": -31951.5449, "margem_bruta": 872350.5301, "desp_var": -16092.72, "recup_desp_var": 2566.79, "margem_contribuicao": 858824.6001, "desp_vendas": -29682.48, "desp_pessoal": -49151.27, "desp_adm": -32214.93, "ebitda": 747775.9201, "rec_fin": 13424.24, "desp_fin": -237.92, "lair": 760962.2401, "outros_tributos": -1081.8, "lucro_liquido": 759880.4401, "ativos": -329.53, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 724010.9101}};
-const DFC = {"Jan-26": {"op_total": 197582.66, "entradas_op": 585487.0, "rec_financ": 7121.81, "outras_entradas": 0.0, "impostos": -125925.41, "custos": -107300.8747, "desp_pessoal": -114541.888, "desp_mkt": -20404.9474, "desp_adm": -26771.63, "desp_fin": -81.4, "investimentos": -6970.69, "financiamentos": -40130.0, "var_caixa": 150481.97}, "Fev-26": {"op_total": -6164.33, "entradas_op": 239746.99, "rec_financ": 6918.05, "outras_entradas": 130.16, "impostos": -30185.03, "custos": -57530.2846, "desp_pessoal": -77363.228, "desp_mkt": -51673.1274, "desp_adm": -35671.57, "desp_fin": -536.29, "investimentos": -982.04, "financiamentos": -40900.0, "var_caixa": -48046.37}, "Mar-26": {"op_total": -232153.27, "entradas_op": 24018.05, "rec_financ": 7582.85, "outras_entradas": 390.0, "impostos": -13082.54, "custos": -111890.9046, "desp_pessoal": -67341.138, "desp_mkt": -46790.8574, "desp_adm": -24928.79, "desp_fin": -109.94, "investimentos": -8605.49, "financiamentos": -35540.0, "var_caixa": -276298.76}, "Abr-26": {"op_total": -173131.35, "entradas_op": 146202.8, "rec_financ": 5462.78, "outras_entradas": 291.19, "impostos": -20044.82, "custos": -178881.5182, "desp_pessoal": -64475.6001, "desp_mkt": -41503.2017, "desp_adm": -20091.54, "desp_fin": -91.44, "investimentos": -18234.45, "financiamentos": -35540.0, "var_caixa": -226905.8}, "Mai-26": {"op_total": -99777.88, "entradas_op": 174705.6, "rec_financ": 2636.95, "outras_entradas": 33438.47, "impostos": -16453.26, "custos": -140782.4029, "desp_pessoal": -88592.1581, "desp_mkt": -43450.659, "desp_adm": -19924.86, "desp_fin": -475.78, "investimentos": -22665.36, "financiamentos": -35540.0, "var_caixa": -157983.24}, "Jun-26": {"op_total": -47115.02, "entradas_op": 197760.35, "rec_financ": 10199.05, "outras_entradas": 380000.0, "impostos": -428529.31, "custos": -70164.4532, "desp_pessoal": -65386.1051, "desp_mkt": -48217.5417, "desp_adm": -22673.87, "desp_fin": -103.14, "investimentos": -17581.93, "financiamentos": -35540.0, "var_caixa": -100236.95}, "Jul-26": {"op_total": 2025978.87, "entradas_op": 2436441.91, "rec_financ": 8097.29, "outras_entradas": 1767.0, "impostos": -140440.28, "custos": -59219.935, "desp_pessoal": -81208.125, "desp_mkt": -98167.15, "desp_adm": -40755.91, "desp_fin": -120.6, "investimentos": -18852.32, "financiamentos": -415540.0, "var_caixa": 1591586.55}, "Ago-26": {"op_total": -233987.22, "entradas_op": 207863.29, "rec_financ": 11107.6, "outras_entradas": 2521.99, "impostos": -100270.42, "custos": -100400.1869, "desp_pessoal": -110384.1386, "desp_mkt": -114100.3445, "desp_adm": -30284.01, "desp_fin": -41.0, "investimentos": -17513.01, "financiamentos": -35540.0, "var_caixa": -287040.23}};
-const ESTOQUE = {"Jan-26": 1086832.16, "Fev-26": 1155802.0, "Mar-26": 1256135.97, "Abr-26": 1476794.48, "Mai-26": 1282908.74, "Jun-26": 1349933.47, "Jul-26": 1319763.19, "Ago-26": 1256176.71};
-const CAIXA = {"Jan-26": {"inicial": 856657.69, "final": 1007139.66}, "Fev-26": {"inicial": 1007139.66, "final": 959093.29}, "Mar-26": {"inicial": 959093.29, "final": 682794.53}, "Abr-26": {"inicial": 682794.53, "final": 418615.48}, "Mai-26": {"inicial": 418615.48, "final": 242207.29}, "Jun-26": {"inicial": 242207.29, "final": 141970.34}, "Jul-26": {"inicial": 141970.34, "final": 1733556.89}, "Ago-26": {"inicial": 1733556.89, "final": 1427639.66}};
-const PIPEDRIVE = {"erro": false, "total": 165156.49, "qtd": 6, "taxa_usd": 5.1058};
-const OMIE = {"erro": false, "total": 118891.4, "qtd": 5};
-const CONTAS_RECEBER = {"erro": false, "total": 1634038.27, "qtd": 26};
-const MESES_DRE = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26"];
-const MESES_DFC = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26"];
-const MESES_ALL = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26"];
+const DRE = {"Jan-26": {"receita_bruta": 122507.81, "impostos": -24062.84, "receita_liquida": 98444.97, "csp": -7529.0196, "cmc_vendas": -13874.0864, "outros_custos": -669.62, "margem_bruta": 76372.244, "desp_var": -28618.9401, "recup_desp_var": 0.0, "margem_contribuicao": 47753.3039, "desp_vendas": -20029.3573, "desp_pessoal": -83432.573, "desp_adm": -42135.6, "ebitda": -97844.2264, "rec_fin": 7121.81, "desp_fin": -279.19, "lair": -91001.6064, "outros_tributos": -48.18, "lucro_liquido": -91049.7864, "ativos": -4717.36, "servicos": -38195.0, "distribuicao_lucros": -38195.0, "resultado": -133962.1464, "outras_rec": 0.0}, "Fev-26": {"receita_bruta": 81306.67, "impostos": -18784.65, "receita_liquida": 62522.02, "csp": -7580.8846, "cmc_vendas": -6320.5872, "outros_custos": -626.5699, "margem_bruta": 47993.9782, "desp_var": -11784.96, "recup_desp_var": 877.49, "margem_contribuicao": 37086.5082, "desp_vendas": -32113.9173, "desp_pessoal": -67430.938, "desp_adm": -25478.1, "ebitda": -87936.4471, "rec_fin": 6170.72, "desp_fin": -793.16, "lair": -82558.8871, "outros_tributos": 0.0, "lucro_liquido": -82558.8871, "ativos": -982.04, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": -124080.9271, "outras_rec": 0.0}, "Mar-26": {"receita_bruta": 77325.29, "impostos": -3439.04, "receita_liquida": 73886.25, "csp": -9678.4482, "cmc_vendas": -7976.0163, "outros_custos": -324.57, "margem_bruta": 55907.2155, "desp_var": -10166.49, "recup_desp_var": 390.0, "margem_contribuicao": 46130.7255, "desp_vendas": -38814.2217, "desp_pessoal": -67346.0401, "desp_adm": -22669.25, "ebitda": -82698.7863, "rec_fin": 7582.85, "desp_fin": -193.97, "lair": -75309.9063, "outros_tributos": -9489.66, "lucro_liquido": -84799.5663, "ativos": -25788.26, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -146127.8263, "outras_rec": 0.0}, "Abr-26": {"receita_bruta": 195572.51, "impostos": -21090.76, "receita_liquida": 174481.75, "csp": -12418.6179, "cmc_vendas": -17214.0108, "outros_custos": -2195.96, "margem_bruta": 142653.1613, "desp_var": -28538.4953, "recup_desp_var": 291.19, "margem_contribuicao": 114405.856, "desp_vendas": -39862.7137, "desp_pessoal": -76526.683, "desp_adm": -17383.22, "ebitda": -19366.7608, "rec_fin": 6021.38, "desp_fin": -1110.4, "lair": -14455.7808, "outros_tributos": -569.64, "lucro_liquido": -15025.4208, "ativos": -23717.04, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -74282.4608, "outras_rec": 0.0}, "Mai-26": {"receita_bruta": 2401385.75, "impostos": -435222.57, "receita_liquida": 1966163.18, "csp": -12060.6282, "cmc_vendas": -273379.8389, "outros_custos": -560.38, "margem_bruta": 1680162.3329, "desp_var": -14214.72, "recup_desp_var": 2458.2, "margem_contribuicao": 1668405.8129, "desp_vendas": -24730.1317, "desp_pessoal": -81963.7801, "desp_adm": -22515.92, "ebitda": 1539195.9811, "rec_fin": 2979.08, "desp_fin": -564.91, "lair": 1541610.1511, "outros_tributos": -1289.61, "lucro_liquido": 1540320.5411, "ativos": -66493.0, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 1438287.5411, "outras_rec": 0.0}, "Jun-26": {"receita_bruta": 231605.23, "impostos": -44114.96, "receita_liquida": 187490.27, "csp": -47079.87, "cmc_vendas": -11989.345, "outros_custos": -1640.87, "margem_bruta": 126780.185, "desp_var": -17509.7799, "recup_desp_var": 9539.1, "margem_contribuicao": 118809.5051, "desp_vendas": -59227.8301, "desp_pessoal": -87399.42, "desp_adm": -34811.74, "ebitda": -62629.485, "rec_fin": 1642.39, "desp_fin": -288.29, "lair": -61275.385, "outros_tributos": -96936.05, "lucro_liquido": -158211.435, "ativos": -958.68, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -194710.115, "outras_rec": 0.0}, "Jul-26": {"receita_bruta": 509319.44, "impostos": -102106.08, "receita_liquida": 407213.36, "csp": -24432.665, "cmc_vendas": -54256.2146, "outros_custos": -6529.17, "margem_bruta": 321995.3104, "desp_var": -89119.3798, "recup_desp_var": 4148.79, "margem_contribuicao": 237024.7206, "desp_vendas": -113749.6102, "desp_pessoal": -112730.5751, "desp_adm": -32045.37, "ebitda": -21500.8346, "rec_fin": 10509.93, "desp_fin": -333.56, "lair": -10695.9646, "outros_tributos": -18.75, "lucro_liquido": -10714.7146, "ativos": -17245.95, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -63500.664600000004, "outras_rec": 628.5}, "Ago-26": {"receita_bruta": 1169189.96, "impostos": -58706.98, "receita_liquida": 1110482.98, "csp": -22568.905, "cmc_vendas": -216046.8749, "outros_custos": -10527.1149, "margem_bruta": 861340.0851, "desp_var": -27979.79, "recup_desp_var": 2566.79, "margem_contribuicao": 835927.0851, "desp_vendas": -27910.25, "desp_pessoal": -102590.865, "desp_adm": -35181.44, "ebitda": 670244.5301, "rec_fin": 13424.24, "desp_fin": -4538.37, "lair": 679130.4001, "outros_tributos": -1081.8, "lucro_liquido": 678048.6001, "ativos": -329.53, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 642179.0701, "outras_rec": 0.0}, "Set-26": {"receita_bruta": 397141.64, "impostos": -36855.59, "receita_liquida": 360286.05, "csp": -10955.87, "cmc_vendas": -71340.4582, "outros_custos": -2868.8700000000003, "margem_bruta": 275120.85189999995, "desp_var": -15830.0393, "recup_desp_var": 1683.41, "margem_contribuicao": 260974.2226, "desp_vendas": -31233.92, "desp_pessoal": -45226.1007, "desp_adm": -32570.76, "ebitda": 151943.4419, "rec_fin": 4235.68, "desp_fin": -245.01, "lair": 155934.1119, "outros_tributos": -1075.7, "lucro_liquido": 154858.4119, "ativos": -669.99, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": 113648.4219, "outras_rec": 0.0}};
+const DFC = {"Jan-26": {"op_total": 197582.66, "entradas_op": 585487.0, "rec_financ": 7121.81, "outras_entradas": 0.0, "impostos": -125925.41, "custos": -107300.8747, "desp_pessoal": -114541.888, "desp_mkt": -20404.9474, "desp_adm": -26771.63, "desp_fin": -81.4, "investimentos": -6970.69, "financiamentos": -40130.0, "var_caixa": 150481.97, "outras_desp": 0.0}, "Fev-26": {"op_total": -6164.33, "entradas_op": 239746.99, "rec_financ": 6918.05, "outras_entradas": 130.16, "impostos": -30185.03, "custos": -57530.2846, "desp_pessoal": -77363.228, "desp_mkt": -51673.1274, "desp_adm": -35671.57, "desp_fin": -536.29, "investimentos": -982.04, "financiamentos": -40900.0, "var_caixa": -48046.37, "outras_desp": 0.0}, "Mar-26": {"op_total": -232153.27, "entradas_op": 24018.05, "rec_financ": 7582.85, "outras_entradas": 390.0, "impostos": -13082.54, "custos": -111890.9046, "desp_pessoal": -67341.138, "desp_mkt": -46790.8574, "desp_adm": -24928.79, "desp_fin": -109.94, "investimentos": -8605.49, "financiamentos": -35540.0, "var_caixa": -276298.76, "outras_desp": 0.0}, "Abr-26": {"op_total": -210404.6, "entradas_op": 108929.55, "rec_financ": 5462.78, "outras_entradas": 291.19, "impostos": -20044.82, "custos": -178881.5182, "desp_pessoal": -64475.6001, "desp_mkt": -41503.2017, "desp_adm": -20091.54, "desp_fin": -91.44, "investimentos": -18234.45, "financiamentos": -35540.0, "var_caixa": -264179.05, "outras_desp": 0.0}, "Mai-26": {"op_total": -118202.83, "entradas_op": 156280.65, "rec_financ": 2636.95, "outras_entradas": 33438.47, "impostos": -16453.26, "custos": -140782.4029, "desp_pessoal": -88592.1581, "desp_mkt": -43450.659, "desp_adm": -19924.86, "desp_fin": -475.78, "investimentos": -22665.36, "financiamentos": -35540.0, "var_caixa": -176408.19, "outras_desp": -879.78}, "Jun-26": {"op_total": -427115.02, "entradas_op": 197760.35, "rec_financ": 10199.05, "outras_entradas": 0.0, "impostos": -428529.31, "custos": -70164.4532, "desp_pessoal": -65386.1051, "desp_mkt": -48217.5417, "desp_adm": -22673.87, "desp_fin": -103.14, "investimentos": -17581.93, "financiamentos": 344460.0, "var_caixa": -100236.95, "outras_desp": 0.0}, "Jul-26": {"op_total": 2025978.87, "entradas_op": 2436441.91, "rec_financ": 8097.29, "outras_entradas": 1767.0, "impostos": -140440.28, "custos": -59219.935, "desp_pessoal": -81208.125, "desp_mkt": -98167.15, "desp_adm": -40755.91, "desp_fin": -120.6, "investimentos": -18852.32, "financiamentos": -415540.0, "var_caixa": 1591586.55, "outras_desp": -415.33}, "Ago-26": {"op_total": -252864.22, "entradas_op": 188986.29, "rec_financ": 11107.6, "outras_entradas": 2521.99, "impostos": -100270.42, "custos": -100400.1869, "desp_pessoal": -110384.1386, "desp_mkt": -114100.3445, "desp_adm": -30284.01, "desp_fin": -41.0, "investimentos": -17513.01, "financiamentos": -35540.0, "var_caixa": -305917.23, "outras_desp": 0.0}, "Set-26": {"op_total": 146389.78, "entradas_op": 462221.97, "rec_financ": 21.47, "outras_entradas": 1812.62, "impostos": -70327.31, "custos": -46415.14, "desp_pessoal": -100604.1717, "desp_mkt": -53561.1483, "desp_adm": -38021.11, "desp_fin": -27.5, "investimentos": -669.99, "financiamentos": -35540.0, "var_caixa": 110179.79, "outras_desp": -8709.9}};
+const ESTOQUE = {"Jan-26": 1089009.12, "Fev-26": 1157978.96, "Mar-26": 1242810.14, "Abr-26": 1463468.66, "Mai-26": 1269582.91, "Jun-26": 1336607.64, "Jul-26": 1305228.85, "Ago-26": 1245159.98, "Set-26": 1142634.79};
+const CAIXA = {"Jan-26": {"inicial": 856657.69, "final": 1007139.66}, "Fev-26": {"inicial": 1007139.66, "final": 959093.29}, "Mar-26": {"inicial": 959093.29, "final": 682794.53}, "Abr-26": {"inicial": 682794.53, "final": 418615.48}, "Mai-26": {"inicial": 418615.48, "final": 242207.29}, "Jun-26": {"inicial": 242207.29, "final": 141970.34}, "Jul-26": {"inicial": 141970.34, "final": 1733556.89}, "Ago-26": {"inicial": 1733556.89, "final": 1427639.66}, "Set-26": {"inicial": 1427639.66, "final": 1537819.45}};
+const PIPEDRIVE = {"erro": false, "total": 0.0, "qtd": 0, "taxa_usd": 4.9863};
+const OMIE = {"erro": false, "total": 56103.56, "qtd": 1};
+const CONTAS_RECEBER = {"erro": false, "total": 1487695.37, "qtd": 26};
+const MESES_DRE = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
+const MESES_DFC = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
+const MESES_ALL = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
 const NUM_COLABORADORES = 15;
-const CAIXA_MINIMO = 1119327.5;
-const MESES_PARCIAIS = ["Ago-26"];
+const CAIXA_MINIMO = 1170040.91; // 6 × Custo Fixo médio mensal dos meses COMPLETOS (Jan–Ago/26; exclui Set parcial)
+const MESES_PARCIAIS = ["Set-26"];
+const SEM_PROV_IRPJ = ["Set-26"];
 const YOY_PAIRS = [];
-const MESES_SEM_PAR = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26"];
+const MESES_SEM_PAR = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
 
 
 // ─── LOGIN ──────────────────────────────────────────────────────────────────
@@ -351,32 +360,38 @@ function computeKPIs(period) {
   const nMeses = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; }).length || 1;
   const cfMedio   = cf ? cf / nMeses : null;
   const cobertura = (caixaFinal && cfMedio) ? caixaFinal / cfMedio : null;
-  const recPC     = rb ? rb / NUM_COLABORADORES : null;
+  const recPC     = rb ? rb / nMeses / NUM_COLABORADORES : null; // receita média mensal por colaborador
   const estoque   = ESTOQUE[lastM];
-  const estRatio  = (estoque && rb) ? estoque / rb : null;
+  const estRatio  = (estoque && rb) ? estoque / (rb / nMeses) : null; // estoque do último mês ÷ RB média mensal do período
 
-  const meses3 = MESES_DRE.slice(-3);
-  const mm3 = meses3.reduce(function(s,m) { return s + (DRE[m] ? DRE[m].receita_bruta : 0); }, 0) / 3;
+  // MM3: últimos 3 meses COMPLETOS dentro do período filtrado (exclui meses parciais)
+  const mesesCompl = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0 && MESES_PARCIAIS.indexOf(m) < 0; });
+  const meses3 = mesesCompl.slice(-3);
+  const mm3 = meses3.length ? meses3.reduce(function(s,m) { return s + (DRE[m] ? DRE[m].receita_bruta : 0); }, 0) / meses3.length : null;
 
-  let varMensal = null;
-  const dreMs = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; });
+  // Variação mensal: compara os 2 últimos meses COMPLETOS do período (ignora mês parcial)
+  let varMensal = null, varMesesTxt = '';
+  const dreMs = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0 && MESES_PARCIAIS.indexOf(m) < 0; });
   if (dreMs.length >= 2) {
-    const cur  = DRE[dreMs[dreMs.length-1]].receita_bruta;
-    const prev = DRE[dreMs[dreMs.length-2]].receita_bruta;
+    const mc2 = dreMs[dreMs.length-1], mp2 = dreMs[dreMs.length-2];
+    const cur  = DRE[mc2].receita_bruta;
+    const prev = DRE[mp2].receita_bruta;
     varMensal = prev ? (cur - prev) / prev * 100 : null;
+    varMesesTxt = mc2 + ' vs ' + mp2;
   } else if (dreMs.length === 1) {
     const idx = MESES_DRE.indexOf(dreMs[0]);
-    if (idx > 0) {
+    if (idx > 0 && MESES_PARCIAIS.indexOf(MESES_DRE[idx-1]) < 0) {
       const cur  = DRE[dreMs[0]].receita_bruta;
       const prev = DRE[MESES_DRE[idx-1]].receita_bruta;
       varMensal = prev ? (cur - prev) / prev * 100 : null;
+      varMesesTxt = dreMs[0] + ' vs ' + MESES_DRE[idx-1];
     }
   }
 
   return { rb:rb, ll:ll, mc:mc, mcPct:mcPct, cf:cf, cfMedio:cfMedio, be:be,
            caixaFinal:caixaFinal, caixaInicial:caixaInicial, varCaixa:varCaixa,
            cobertura:cobertura, recPC:recPC, estoque:estoque, estRatio:estRatio,
-           mm3:mm3, varMensal:varMensal, hasDRE:hasDRE, period:period };
+           mm3:mm3, meses3:meses3, varMensal:varMensal, varMesesTxt:varMesesTxt, hasDRE:hasDRE, period:period };
 }
 
 // ─── RENDER KPIs ────────────────────────────────────────────────────────────
@@ -416,7 +431,7 @@ function renderKPIs(period) {
   // 1 — Receita Bruta
   html += card('blue','Receita Bruta', k.rb?fmtR(k.rb,true):nd, k.rb?fmtR(k.rb):'', '');
   // 2 — MC
-  html += card('green','Margem de Contribuição', k.mc?fmtR(k.mc,true):nd, k.mcPct?fmtPct(k.mcPct)+' da Receita Bruta':'', '');
+  html += card('green','MC ajustada', k.mc?fmtR(k.mc,true):nd, k.mcPct?fmtPct(k.mcPct)+' da RB · MC oficial − Outros Tributos':'', '');
   // 3 — LL
   html += card(k.ll!==null&&k.ll<0?'red':'green','Lucro Líquido',
     k.ll!==null?fmtR(k.ll,true):nd, k.ll!==null&&k.rb?fmtPct(k.ll/k.rb*100)+' da RB':'', '');
@@ -433,29 +448,19 @@ function renderKPIs(period) {
   html += card(k.cobertura&&k.cobertura>6?'blue':'red','Cobertura de Caixa',
     k.cobertura?fmtN(k.cobertura)+' meses':nd, 'Meta: > 6 meses', '');
   // 8 — Receita/colaborador
-  html += card('blue','Receita / Colaborador', k.recPC?fmtR(k.recPC,true):nd, 'Base: '+NUM_COLABORADORES+' colaboradores', '');
+  html += card('blue','Receita / Colaborador (mês)', k.recPC?fmtR(k.recPC,true):nd, 'RB média mensal ÷ '+NUM_COLABORADORES+' colaboradores', '');
   // 9 — Estoque/Receita
   html += card(k.estRatio&&k.estRatio>10?'red':'blue','Estoque / Receita',
-    k.estRatio?fmtN(k.estRatio)+'x':nd, k.estoque?fmtR(k.estoque,true)+' em estoque':'', '');
+    k.estRatio?fmtN(k.estRatio)+'x':nd, k.estoque?fmtR(k.estoque,true)+' em estoque · '+(k.estRatio>10?'ALTO':'OK')+' (limite 10x RB média mensal)':'', '');
   // 10 — Geração de Caixa
   html += card(k.varCaixa!==null&&k.varCaixa>=0?'green':'red','Geração de Caixa',
-    k.varCaixa!==null?fmtR(k.varCaixa,true):nd, k.varCaixa!==null&&k.varCaixa>=0?'▲ Positivo':'▼ Negativo', '');
+    k.varCaixa!==null?fmtR(k.varCaixa,true):nd, k.varCaixa!==null&&k.varCaixa>=0?'▲ Positivo · Entradas − Saídas':'▼ Negativo · Entradas − Saídas', '');
   // 11 — MM3
-  html += card('blue','Média Móvel 3m Receita', fmtR(k.mm3,true), 'Últimos 3 meses', '');
+  html += card('blue','Média Móvel 3m Receita', k.mm3!==null?fmtR(k.mm3,true):nd, k.meses3.length?('Últimos '+k.meses3.length+' meses completos: '+k.meses3[0]+(k.meses3.length>1?' a '+k.meses3[k.meses3.length-1]:'')):'', '');
   // 12 — Var mensal
   html += card(k.varMensal!==null&&k.varMensal>=0?'green':'red','Variação Mensal Receita',
-    k.varMensal!==null?fmtPct(k.varMensal):nd, 'Mês a mês', '');
-  // 13 — Var Caixa
-  html += card(k.varCaixa!==null&&k.varCaixa>=0?'teal':'red','Variação Líquida do Caixa',
-    k.varCaixa!==null?fmtR(k.varCaixa,true):nd, 'Entradas - Saídas', '');
-  // 14 — Status Caixa
-  html += card(k.caixaFinal!==null&&k.caixaFinal>=CAIXA_MINIMO?'green':'red','Status Caixa',
-    k.caixaFinal!==null?(k.caixaFinal>=CAIXA_MINIMO?'OK':'ALERTA'):nd,
-    k.caixaFinal!==null?fmtR(k.caixaFinal):'', '');
-  // 15 — Status Estoque
-  html += card(k.estRatio&&k.estRatio>10?'red':'green','Status Estoque',
-    k.estRatio?(k.estRatio>10?'ALTO':'OK'):nd,
-    k.estRatio?fmtN(k.estRatio)+'x da Receita Bruta':'', '');
+    k.varMensal!==null?fmtPct(k.varMensal):nd, k.varMesesTxt?('Mês completo: '+k.varMesesTxt):'Mês a mês', '');
+  // (Variação Líquida do Caixa, Status Caixa e Status Estoque consolidados nos cards Geração de Caixa, Caixa Final e Estoque / Receita)
 
   document.getElementById('kpi-grid').innerHTML = html;
 }
@@ -497,7 +502,7 @@ function addTooltip(canvas, tipData) {
     }
     if (best && bd < 40) {
       var rows = best.values.map(function(v) {
-        return '<span style="color:' + v.color + '">' + v.name + ':</span> ' + fmtR(v.val);
+        return '<span style="color:' + v.color + '">' + v.name + ':</span> ' + fmtR(v.val) + (v.parcial ? ' (parcial)' : '');
       }).join('<br>');
       tip.innerHTML = '<b>' + best.label + '</b><br>' + rows;
       tip.style.display = 'block';
@@ -540,7 +545,7 @@ function drawGrid(ctx, w, h, pad, yMin, yMax, labels, isPercent) {
   }
 }
 
-function drawBarLine(id, labels, barData, lineData, barColor, lineColor, insId, insText, missingIdx) {
+function drawBarLine(id, labels, barData, lineData, barColor, lineColor, insId, insText, missingIdx, parcialIdx) {
   var S = setupCanvas(id);
   var ctx = S.ctx, w = S.w, h = S.h;
   var pad = { l:72, r:20, t:16, b:28 };
@@ -561,13 +566,14 @@ function drawBarLine(id, labels, barData, lineData, barColor, lineColor, insId, 
 
   for (var i = 0; i < labels.length; i++) {
     var isMissing = !!(missingIdx && missingIdx[i]);
+    var isParcial = !isMissing && !!(parcialIdx && parcialIdx[i]);
     var bx   = pad.l + bw * i + (bw - barW) / 2;
     var yTop = scaleY(barData[i], yMin, yMax, pad.t, ch);
     ctx.fillStyle = barColor;
     ctx.globalAlpha = isMissing ? 0.15 : 1;
     ctx.fillRect(bx, Math.min(yBase, yTop), barW, Math.abs(yBase - yTop));
     ctx.globalAlpha = 1;
-    if (isMissing) {
+    if (isMissing || isParcial) {
       ctx.strokeStyle = COLORS.amber; ctx.lineWidth = 1.5; ctx.setLineDash([3, 2]);
       ctx.strokeRect(bx, pad.t, barW, ch);
       ctx.setLineDash([]);
@@ -576,8 +582,8 @@ function drawBarLine(id, labels, barData, lineData, barColor, lineColor, insId, 
     var barLabelY = barData[i] >= 0 ? Math.min(yBase, yTop) : Math.max(yBase, yTop);
     drawLabel(ctx, isMissing ? 'N/D' : fmtR(barData[i], true), pad.l + bw * (i + 0.5), barLabelY, isMissing ? COLORS.amber : barColor, barData[i] >= 0);
     tipData.push({ x: pad.l + bw * (i + 0.5), label: labels[i],
-      values: [{ name:'Barras', val: isMissing ? null : barData[i], color:barColor },
-               { name:'Linha',  val:lineData[i], color:lineColor }] });
+      values: [{ name:'Barras', val: isMissing ? null : barData[i], color:barColor, parcial:isParcial },
+               { name:'Linha',  val:lineData[i], color:lineColor, parcial:isParcial }] });
   }
 
   ctx.strokeStyle = lineColor; ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
@@ -597,6 +603,11 @@ function drawBarLine(id, labels, barData, lineData, barColor, lineColor, insId, 
     var yd = scaleY(lineData[k2], yMin, yMax, pad.t, ch);
     ctx.fillStyle = lineColor;
     ctx.beginPath(); ctx.arc(xd, yd, 3, 0, Math.PI * 2); ctx.fill();
+    if (parcialIdx && parcialIdx[k2]) {
+      ctx.strokeStyle = COLORS.amber; ctx.lineWidth = 1.5; ctx.setLineDash([2, 2]);
+      ctx.beginPath(); ctx.arc(xd, yd, 6, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+    }
     // rótulo no ponto da linha
     drawLabel(ctx, fmtR(lineData[k2], true), xd, yd, lineColor, true);
   }
@@ -605,7 +616,7 @@ function drawBarLine(id, labels, barData, lineData, barColor, lineColor, insId, 
   addTooltip(document.getElementById(id), tipData);
 }
 
-function drawArea(id, labels, data, color, isPercent, extraLine, insId, insText) {
+function drawArea(id, labels, data, color, isPercent, extraLine, insId, insText, parcialIdx) {
   var S = setupCanvas(id);
   var ctx = S.ctx, w = S.w, h = S.h;
   var pad = { l:72, r:52, t:16, b:28 };
@@ -655,6 +666,11 @@ function drawArea(id, labels, data, color, isPercent, extraLine, insId, insText)
   for (var m2 = 0; m2 < pts.length; m2++) {
     ctx.fillStyle = color;
     ctx.beginPath(); ctx.arc(pts[m2][0], pts[m2][1], 3.5, 0, Math.PI * 2); ctx.fill();
+    if (parcialIdx && parcialIdx[m2]) {
+      ctx.strokeStyle = COLORS.amber; ctx.lineWidth = 1.5; ctx.setLineDash([2, 2]);
+      ctx.beginPath(); ctx.arc(pts[m2][0], pts[m2][1], 6.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+    }
     if (data[m2] !== null) {
       drawLabel(ctx, isPercent ? fmtPct(data[m2]) : fmtR(data[m2], true), pts[m2][0], pts[m2][1], color, true);
     }
@@ -663,7 +679,8 @@ function drawArea(id, labels, data, color, isPercent, extraLine, insId, insText)
   if (insId) document.getElementById(insId).textContent = insText;
   var tipData = [];
   for (var n = 0; n < labels.length; n++) {
-    tipData.push({ x: pts[n][0], label: labels[n], values: [{ name:'Valor', val:data[n], color:color }] });
+    var isParcN = !!(parcialIdx && parcialIdx[n]);
+    tipData.push({ x: pts[n][0], label: labels[n], values: [{ name:'Valor', val:data[n], color:color, parcial:isParcN }] });
   }
   addTooltip(document.getElementById(id), tipData);
 }
@@ -723,8 +740,12 @@ function drawCaixa(period) {
     if (inPeriod) drawLabel(ctx, fmtR(vals[k4], true), pts[k4][0], pts[k4][1], COLORS.purple, true);
   }
 
+  // Var. total do período filtrado: Caixa final do último mês − Caixa inicial do primeiro mês
+  var pCx = allMs.filter(function(m) { return period.indexOf(m) >= 0 && CAIXA[m]; });
+  var cxFim = pCx.length ? CAIXA[pCx[pCx.length-1]].final : vals[vals.length-1];
+  var cxIni = pCx.length ? CAIXA[pCx[0]].inicial : vals[0];
   document.getElementById('ins3').textContent =
-    'Caixa Final: ' + fmtR(vals[vals.length-1]) + ' | Var. total: ' + fmtR(vals[vals.length-1] - vals[0]);
+    'Caixa Final: ' + fmtR(cxFim) + ' | Var. total do período: ' + fmtR(cxFim - cxIni);
 
   var tipData = allMs.map(function(lb, i) {
     return { x: pts[i][0], label: lb, values: [{ name:'Caixa Final', val: vals[i], color: COLORS.purple }] };
@@ -740,6 +761,8 @@ function _parcSuffix(meses) {
 function renderCharts(period) {
   var dreMes = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; });
   var dfcMes = period.filter(function(m) { return MESES_DFC.indexOf(m) >= 0; });
+  var parcDRE = dreMes.map(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; });
+  var parcDFC = dfcMes.map(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; });
 
   if (dreMes.length) {
     // C1 Receita vs LL
@@ -747,7 +770,8 @@ function renderCharts(period) {
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       dreMes.map(function(m) { return DRE[m].lucro_liquido; }),
       COLORS.blue, COLORS.red,
-      'ins1', 'Lucro Líquido: ' + dreMes.map(function(m) { return fmtR(DRE[m].lucro_liquido,true); }).join(' | ') + _parcSuffix(dreMes));
+      'ins1', 'Lucro Líquido: ' + dreMes.map(function(m) { return fmtR(DRE[m].lucro_liquido,true); }).join(' | ') + _parcSuffix(dreMes),
+      null, parcDRE);
 
     // C2 MC% — usa MC ajustada (MC oficial - |Outros Tributos|), mesma
     // definição do KPI 2/4 (ver comentário em computeKPIs)
@@ -755,7 +779,7 @@ function renderCharts(period) {
     var mcPcts = dreMes.map(function(m) { return mcAdj(m) / DRE[m].receita_bruta * 100; });
     var mcAvg = dreMes.reduce(function(s,m) { return s+mcAdj(m); },0) /
                 dreMes.reduce(function(s,m) { return s+DRE[m].receita_bruta; },0) * 100;
-    drawArea('c2', dreMes, mcPcts, COLORS.teal, true, null, 'ins2', 'MC média: ' + fmtPct(mcAvg) + _parcSuffix(dreMes));
+    drawArea('c2', dreMes, mcPcts, COLORS.teal, true, null, 'ins2', 'MC média: ' + fmtPct(mcAvg) + _parcSuffix(dreMes), parcDRE);
 
     // C4 Estoque vs Receita
     var estMissing4 = dreMes.map(function(m) { return ESTOQUE[m] == null; });
@@ -764,7 +788,7 @@ function renderCharts(period) {
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       COLORS.amber, COLORS.blue,
       'ins4', 'Razão Estoque/RB: ' + dreMes.map(function(m) { return ESTOQUE[m] == null ? 'N/D' : fmtN(ESTOQUE[m]/DRE[m].receita_bruta)+'x'; }).join(' | ') + _parcSuffix(dreMes),
-      estMissing4);
+      estMissing4, parcDRE);
 
     // C5 Desp Venda vs Receita
     var dvPct5 = dreMes.reduce(function(s,m){ return s+Math.abs(DRE[m].desp_vendas); },0) /
@@ -773,7 +797,8 @@ function renderCharts(period) {
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       dreMes.map(function(m) { return Math.abs(DRE[m].desp_vendas); }),
       COLORS.blue, COLORS.red,
-      'ins5', 'Desp. Venda: ' + fmtPct(dvPct5) + ' da Receita no período' + _parcSuffix(dreMes));
+      'ins5', 'Desp. Venda: ' + fmtPct(dvPct5) + ' da Receita no período' + _parcSuffix(dreMes),
+      null, parcDRE);
 
     // C6 Desp Var vs Receita
     var dvPct6 = dreMes.reduce(function(s,m){ return s+Math.abs(DRE[m].desp_var); },0) /
@@ -782,10 +807,13 @@ function renderCharts(period) {
       dreMes.map(function(m) { return DRE[m].receita_bruta; }),
       dreMes.map(function(m) { return Math.abs(DRE[m].desp_var); }),
       COLORS.blue, COLORS.amber,
-      'ins6', 'Desp. Variáveis: ' + fmtPct(dvPct6) + ' da Receita no período' + _parcSuffix(dreMes));
+      'ins6', 'Desp. Variáveis: ' + fmtPct(dvPct6) + ' da Receita no período' + _parcSuffix(dreMes),
+      null, parcDRE);
   }
 
-  // C3 Caixa (sempre todos)
+  // C3 Caixa (sempre todos) — PASSO 6B: Gráfico 3 nunca exibe marcador de
+  // mês parcial (histórico completo, não representa um mês específico do
+  // período filtrado)
   drawCaixa(period);
 
   if (dfcMes.length) {
@@ -798,7 +826,8 @@ function renderCharts(period) {
       dfcMes.map(function(m) { return DFC[m].entradas_op; }),
       dfcMes.map(function(m) { return MESES_DRE.indexOf(m)>=0 ? Math.abs(DRE[m].desp_vendas) : null; }),
       COLORS.green, COLORS.red,
-      'ins7', (dvPct7 ? 'Desp. Venda: '+fmtPct(dvPct7)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes));
+      'ins7', (dvPct7 ? 'Desp. Venda: '+fmtPct(dvPct7)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes),
+      null, parcDFC);
 
     var dvPct8 = hasDRE7 ?
       dfcMes.filter(function(m){ return MESES_DRE.indexOf(m)>=0; }).reduce(function(s,m){ return s+Math.abs(DRE[m].desp_var); },0) /
@@ -808,7 +837,8 @@ function renderCharts(period) {
       dfcMes.map(function(m) { return DFC[m].entradas_op; }),
       dfcMes.map(function(m) { return MESES_DRE.indexOf(m)>=0 ? Math.abs(DRE[m].desp_var) : null; }),
       COLORS.green, COLORS.amber,
-      'ins8', (dvPct8 ? 'Desp. Variáveis: '+fmtPct(dvPct8)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes));
+      'ins8', (dvPct8 ? 'Desp. Variáveis: '+fmtPct(dvPct8)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes),
+      null, parcDFC);
   }
 }
 
@@ -839,20 +869,22 @@ function renderDRE(period) {
     { label:'(-) Despesas com Pessoal', field:'desp_pessoal' },
     { label:'(-) Despesas Administrativas', field:'desp_adm' },
     { label:'= EBITDA / Lucro Operacional', field:'ebitda', result:true },
+    { label:'(+) Outras Receitas', field:'outras_rec' },
     { label:'(+) Receitas Financeiras', field:'rec_fin' },
     { label:'(-) Despesas Financeiras', field:'desp_fin' },
     { label:'= LAIR', field:'lair', result:true },
     { label:'(-) Outros Tributos', field:'outros_tributos' },
     { label:'= Lucro Líquido', field:'lucro_liquido', result:true },
     { label:'(-) Ativos (Investimentos)', field:'ativos' },
-    { label:'(-) Serviços (PLR / Distribuição de Lucros)', field:'servicos' },
+    { label:'(-) Serviços (PLR / Distribuição de Lucros — exclui mútuo de sócios)', field:'servicos' },
     { label:'= Resultado após Inv./Fin.', field:'resultado', result:true },
   ];
 
   var html = '<table><thead><tr><th style="min-width:240px">Linha</th>';
   cols.forEach(function(m) {
     var dim = MESES_DRE.indexOf(m) >= 0 && selDRE.indexOf(m) < 0 && m !== 'Total';
-    html += '<th style="opacity:' + (dim ? 0.35 : 1) + '">' + m + '</th>';
+    var badge = MESES_PARCIAIS.indexOf(m) >= 0 ? '<span class="badge-parcial">PARCIAL</span>' : '';
+    html += '<th style="opacity:' + (dim ? 0.35 : 1) + '">' + m + badge + '</th>';
   });
   html += '</tr></thead><tbody>';
 
@@ -895,14 +927,16 @@ function renderDFC(period) {
     { label:'&nbsp;&nbsp;&nbsp;3.2 Despesas de Marketing e Vendas', field:'desp_mkt' },
     { label:'&nbsp;&nbsp;&nbsp;3.3 Despesas Administrativas', field:'desp_adm' },
     { label:'&nbsp;&nbsp;&nbsp;3.4 Despesas Financeiras', field:'desp_fin' },
+    { label:'&nbsp;&nbsp;&nbsp;3.5 Outras Despesas', field:'outras_desp' },
     { label:'4 - INVESTIMENTOS', isHeader:true, field:'investimentos' },
-    { label:'5 - FINANCIAMENTOS', isHeader:true, field:'financiamentos' },
+    { label:'5 - FINANCIAMENTOS (inclui mútuo de sócios)', isHeader:true, field:'financiamentos' },
     { label:'= Variação Líquida do Caixa', field:'var_caixa', result:true },
   ];
 
   var html = '<table><thead><tr><th style="min-width:260px">Linha</th>';
   cols.forEach(function(m) {
-    html += '<th style="opacity:' + (selDFC.indexOf(m) >= 0 || m === 'Total' ? 1 : 0.35) + '">' + m + '</th>';
+    var badge = MESES_PARCIAIS.indexOf(m) >= 0 ? '<span class="badge-parcial">PARCIAL</span>' : '';
+    html += '<th style="opacity:' + (selDFC.indexOf(m) >= 0 || m === 'Total' ? 1 : 0.35) + '">' + m + badge + '</th>';
   });
   html += '</tr></thead><tbody>';
 
@@ -964,7 +998,7 @@ function renderEstoque(period) {
 
 function renderResumo(period) {
   var ms = MESES_ALL;
-  var html = '<table><thead><tr><th>Mês</th><th>Receita</th><th>Lucro Líq.</th><th>MC%</th><th>LL%</th><th>Caixa Final</th><th>Var. Caixa</th></tr></thead><tbody>';
+  var html = '<table><thead><tr><th>Mês</th><th>Receita</th><th>Lucro Líq.</th><th>MC% (oficial)</th><th>LL%</th><th>Caixa Final</th><th>Var. Caixa</th></tr></thead><tbody>';
   ms.forEach(function(m) {
     var dre = DRE[m], dfc = DFC[m], caf = CAIXA[m] ? CAIXA[m].final : null;
     var rb = dre ? dre.receita_bruta : null;
@@ -973,7 +1007,8 @@ function renderResumo(period) {
     var mcPct = rb && mc ? mc / rb * 100 : null;
     var llPct = rb && ll !== null ? ll / rb * 100 : null;
     var dim = period.indexOf(m) < 0;
-    html += '<tr style="opacity:' + (dim ? 0.28 : 1) + '"><td>' + m + '</td>';
+    var badgeM = MESES_PARCIAIS.indexOf(m) >= 0 ? '<span class="badge-parcial">PARCIAL</span>' : '';
+    html += '<tr style="opacity:' + (dim ? 0.28 : 1) + '"><td>' + m + badgeM + '</td>';
     html += '<td>' + (rb ? fmtR(rb) : 'N/D') + '</td>';
     html += '<td style="color:' + (ll === null ? '' : ll >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (ll !== null ? fmtR(ll) : 'N/D') + '</td>';
     html += '<td>' + (mcPct !== null ? fmtPct(mcPct) : 'N/D') + '</td>';
@@ -1023,6 +1058,7 @@ function renderYoY() {
     { label:'(-) Despesas com Pessoal', field:'desp_pessoal' },
     { label:'(-) Despesas Administrativas', field:'desp_adm' },
     { label:'= EBITDA / Lucro Operacional', field:'ebitda', result:true },
+    { label:'(+) Outras Receitas', field:'outras_rec' },
     { label:'(+) Receitas Financeiras', field:'rec_fin' },
     { label:'(-) Despesas Financeiras', field:'desp_fin' },
     { label:'= LAIR', field:'lair', result:true },
@@ -1044,12 +1080,13 @@ function renderYoY() {
     { label:'3.2 Despesas de Marketing e Vendas', field:'desp_mkt' },
     { label:'3.3 Despesas Administrativas', field:'desp_adm' },
     { label:'3.4 Despesas Financeiras', field:'desp_fin' },
+    { label:'3.5 Outras Despesas', field:'outras_desp' },
     { label:'4 - INVESTIMENTOS', isHeader:true, field:'investimentos' },
     { label:'5 - FINANCIAMENTOS', isHeader:true, field:'financiamentos' },
     { label:'= Variação Líquida do Caixa', field:'var_caixa', result:true }
   ];
 
-  var CUSTO_FIELDS = ['impostos','csp','cmc_vendas','outros_custos','desp_var','desp_vendas','desp_pessoal','desp_adm','desp_fin','outros_tributos','ativos','servicos','custos','desp_mkt'];
+  var CUSTO_FIELDS = ['impostos','csp','cmc_vendas','outros_custos','desp_var','desp_vendas','desp_pessoal','desp_adm','desp_fin','outros_tributos','ativos','servicos','custos','desp_mkt','outras_desp'];
 
   function ahPct(cur, prev) {
     if (prev === null || prev === undefined || prev === 0) return null;
@@ -1178,20 +1215,30 @@ function refresh() {
     b.classList.toggle('selected', selectedMonths.indexOf(b.getAttribute('data-period')) >= 0);
   });
   document.getElementById('btn-all').classList.toggle('active', selectedMonths.length === MESES_ALL.length);
-  document.getElementById('period-label').textContent = periodLabel(activePeriod);
+  var plabel = periodLabel(activePeriod);
+  var selIncludesParcial = activePeriod.some(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; });
+  if (selIncludesParcial) plabel += ' (inclui dado parcial)';
+  document.getElementById('period-label').textContent = plabel;
 
-  // Aviso de dados parciais
-  var parciaisAtivos = activePeriod.filter(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; });
-  var temParcial = parciaisAtivos.length > 0;
-  var labelParcial = parciaisAtivos.join(', ');
+  // Aviso de dados parciais — PASSO 6B: sempre visível quando há mês(es)
+  // marcado(s) como incompleto no comando, independentemente do filtro de
+  // período selecionado (é um aviso sobre a qualidade do dado, não sobre a
+  // visualização atual).
+  var temParcial = MESES_PARCIAIS.length > 0;
+  var labelParcial = MESES_PARCIAIS.join(', ');
   var av = document.getElementById('aviso-parcial');
   var avG = document.getElementById('aviso-parcial-graf');
   av.classList.toggle('visible', temParcial);
-  avG.classList.toggle('visible', temParcial);
-  if (temParcial) {
-    document.getElementById('aviso-meses').textContent = labelParcial;
-    document.getElementById('aviso-meses-graf').textContent = labelParcial;
+  avG.classList.toggle('visible', selIncludesParcial);
+  if (temParcial) document.getElementById('aviso-meses').textContent = labelParcial;
+  if (selIncludesParcial) {
+    var parciaisAtivos = activePeriod.filter(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; });
+    document.getElementById('aviso-meses-graf').textContent = parciaisAtivos.join(', ');
   }
+
+  var semProv = activePeriod.filter(function(m) { return SEM_PROV_IRPJ.indexOf(m) >= 0; });
+  document.getElementById('aviso-irpj').classList.toggle('visible', semProv.length > 0);
+  if (semProv.length) document.getElementById('aviso-irpj-meses').textContent = semProv.join(', ');
 
   renderKPIs(activePeriod);
   renderResultado(activePeriod);
