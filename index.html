@@ -17,6 +17,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,san
 .header{background:var(--surface);border-bottom:1px solid #1e2030;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:600;letter-spacing:.5px}
 .header .sub{color:var(--text2);font-size:12px;margin-top:2px}
+.btn-excel{display:inline-flex;align-items:center;gap:6px;background:#0f2a1d;border:1px solid var(--green);color:var(--green);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .15s}
+.btn-excel:hover{background:var(--green);color:#07080f}
 .filters{background:var(--surface);border-bottom:1px solid #1e2030;padding:12px 24px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .filters .sep{width:1px;height:20px;background:#2a2d3e;margin:0 4px}
 .btn-filter{background:#1e2030;border:1px solid #2a2d3e;color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .15s}
@@ -121,7 +123,10 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
     <h1>Dashboard Executivo</h1>
     <div class="sub">Toledo &amp; Souza Engenharia Ltda</div>
   </div>
-  <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 12/10/2026 13:22</div>
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:flex-end">
+    <button class="btn-excel" id="btn-excel" onclick="baixarExcel()" title="Exporta o período selecionado no filtro para Excel (.xlsx)">&#11015; Exportar Excel</button>
+    <div style="text-align:right;color:var(--text2);font-size:12px">Gerado em 30/10/2026 12:47</div>
+  </div>
 </div>
 
 <div class="filters" id="filter-bar">
@@ -142,13 +147,6 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
       Competência ainda em aberto. Os valores exibidos podem não refletir o resultado final do período.
     </div>
   </div>
-  <div class="aviso-parcial" id="aviso-irpj">
-    <div class="av-icon">&#9888;</div>
-    <div class="av-body">
-      <div class="av-title">Sem provisão de IRPJ/CSLL — <span id="aviso-irpj-meses"></span></div>
-      O trimestre (Jul–Set) ainda não tem a provisão de IRPJ/CSLL lançada. Lucro Líquido, Margem de Contribuição ajustada, Break-even e Resultado do período não refletem o imposto trimestral.
-    </div>
-  </div>
   <div class="kpi-grid" id="kpi-grid"></div>
   <div class="resultado-box" id="resultado-box"></div>
 
@@ -160,7 +158,7 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
       <div class="chart-wrap"><canvas id="c1" height="220"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Margem de Contribuição ajustada (%) <span style="font-weight:400;font-size:.8em">· MC oficial − Outros Tributos</span></div>
+      <div class="chart-title">Margem de Contribuição ajustada (%)</div>
       <div class="chart-insight" id="ins2"></div>
       <div class="chart-wrap"><canvas id="c2" height="220"></canvas></div>
     </div>
@@ -214,7 +212,7 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 </div>
 
 <div class="footer">
-  DRE: Jan-26 a Set-26 | DFC: Jan-26 a Set-26 | APIs consultadas em 12/10/2026 13:22<br>
+  DRE: Jan-26 a Out-26 | DFC: Jan-26 a Out-26 | APIs consultadas em 30/10/2026 12:47<br>
   Toledo &amp; Souza Engenharia Ltda — Dashboard Executivo
 </div>
 <div id="tooltip"></div>
@@ -222,23 +220,40 @@ tr.row-total td{background:#0d1117;color:var(--blue);font-weight:700;border-top:
 </div>
 
 <script>
-const DRE = {"Jan-26": {"receita_bruta": 122507.81, "impostos": -24062.84, "receita_liquida": 98444.97, "csp": -7529.0196, "cmc_vendas": -13874.0864, "outros_custos": -669.62, "margem_bruta": 76372.244, "desp_var": -28618.9401, "recup_desp_var": 0.0, "margem_contribuicao": 47753.3039, "desp_vendas": -20029.3573, "desp_pessoal": -83432.573, "desp_adm": -42135.6, "ebitda": -97844.2264, "rec_fin": 7121.81, "desp_fin": -279.19, "lair": -91001.6064, "outros_tributos": -48.18, "lucro_liquido": -91049.7864, "ativos": -4717.36, "servicos": -38195.0, "distribuicao_lucros": -38195.0, "resultado": -133962.1464, "outras_rec": 0.0}, "Fev-26": {"receita_bruta": 81306.67, "impostos": -18784.65, "receita_liquida": 62522.02, "csp": -7580.8846, "cmc_vendas": -6320.5872, "outros_custos": -626.5699, "margem_bruta": 47993.9782, "desp_var": -11784.96, "recup_desp_var": 877.49, "margem_contribuicao": 37086.5082, "desp_vendas": -32113.9173, "desp_pessoal": -67430.938, "desp_adm": -25478.1, "ebitda": -87936.4471, "rec_fin": 6170.72, "desp_fin": -793.16, "lair": -82558.8871, "outros_tributos": 0.0, "lucro_liquido": -82558.8871, "ativos": -982.04, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": -124080.9271, "outras_rec": 0.0}, "Mar-26": {"receita_bruta": 77325.29, "impostos": -3439.04, "receita_liquida": 73886.25, "csp": -9678.4482, "cmc_vendas": -7976.0163, "outros_custos": -324.57, "margem_bruta": 55907.2155, "desp_var": -10166.49, "recup_desp_var": 390.0, "margem_contribuicao": 46130.7255, "desp_vendas": -38814.2217, "desp_pessoal": -67346.0401, "desp_adm": -22669.25, "ebitda": -82698.7863, "rec_fin": 7582.85, "desp_fin": -193.97, "lair": -75309.9063, "outros_tributos": -9489.66, "lucro_liquido": -84799.5663, "ativos": -25788.26, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -146127.8263, "outras_rec": 0.0}, "Abr-26": {"receita_bruta": 195572.51, "impostos": -21090.76, "receita_liquida": 174481.75, "csp": -12418.6179, "cmc_vendas": -17214.0108, "outros_custos": -2195.96, "margem_bruta": 142653.1613, "desp_var": -28538.4953, "recup_desp_var": 291.19, "margem_contribuicao": 114405.856, "desp_vendas": -39862.7137, "desp_pessoal": -76526.683, "desp_adm": -17383.22, "ebitda": -19366.7608, "rec_fin": 6021.38, "desp_fin": -1110.4, "lair": -14455.7808, "outros_tributos": -569.64, "lucro_liquido": -15025.4208, "ativos": -23717.04, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -74282.4608, "outras_rec": 0.0}, "Mai-26": {"receita_bruta": 2401385.75, "impostos": -435222.57, "receita_liquida": 1966163.18, "csp": -12060.6282, "cmc_vendas": -273379.8389, "outros_custos": -560.38, "margem_bruta": 1680162.3329, "desp_var": -14214.72, "recup_desp_var": 2458.2, "margem_contribuicao": 1668405.8129, "desp_vendas": -24730.1317, "desp_pessoal": -81963.7801, "desp_adm": -22515.92, "ebitda": 1539195.9811, "rec_fin": 2979.08, "desp_fin": -564.91, "lair": 1541610.1511, "outros_tributos": -1289.61, "lucro_liquido": 1540320.5411, "ativos": -66493.0, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 1438287.5411, "outras_rec": 0.0}, "Jun-26": {"receita_bruta": 231605.23, "impostos": -44114.96, "receita_liquida": 187490.27, "csp": -47079.87, "cmc_vendas": -11989.345, "outros_custos": -1640.87, "margem_bruta": 126780.185, "desp_var": -17509.7799, "recup_desp_var": 9539.1, "margem_contribuicao": 118809.5051, "desp_vendas": -59227.8301, "desp_pessoal": -87399.42, "desp_adm": -34811.74, "ebitda": -62629.485, "rec_fin": 1642.39, "desp_fin": -288.29, "lair": -61275.385, "outros_tributos": -96936.05, "lucro_liquido": -158211.435, "ativos": -958.68, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -194710.115, "outras_rec": 0.0}, "Jul-26": {"receita_bruta": 509319.44, "impostos": -102106.08, "receita_liquida": 407213.36, "csp": -24432.665, "cmc_vendas": -54256.2146, "outros_custos": -6529.17, "margem_bruta": 321995.3104, "desp_var": -89119.3798, "recup_desp_var": 4148.79, "margem_contribuicao": 237024.7206, "desp_vendas": -113749.6102, "desp_pessoal": -112730.5751, "desp_adm": -32045.37, "ebitda": -21500.8346, "rec_fin": 10509.93, "desp_fin": -333.56, "lair": -10695.9646, "outros_tributos": -18.75, "lucro_liquido": -10714.7146, "ativos": -17245.95, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -63500.664600000004, "outras_rec": 628.5}, "Ago-26": {"receita_bruta": 1169189.96, "impostos": -58706.98, "receita_liquida": 1110482.98, "csp": -22568.905, "cmc_vendas": -216046.8749, "outros_custos": -10527.1149, "margem_bruta": 861340.0851, "desp_var": -27979.79, "recup_desp_var": 2566.79, "margem_contribuicao": 835927.0851, "desp_vendas": -27910.25, "desp_pessoal": -102590.865, "desp_adm": -35181.44, "ebitda": 670244.5301, "rec_fin": 13424.24, "desp_fin": -4538.37, "lair": 679130.4001, "outros_tributos": -1081.8, "lucro_liquido": 678048.6001, "ativos": -329.53, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 642179.0701, "outras_rec": 0.0}, "Set-26": {"receita_bruta": 397141.64, "impostos": -36855.59, "receita_liquida": 360286.05, "csp": -10955.87, "cmc_vendas": -71340.4582, "outros_custos": -2868.8700000000003, "margem_bruta": 275120.85189999995, "desp_var": -15830.0393, "recup_desp_var": 1683.41, "margem_contribuicao": 260974.2226, "desp_vendas": -31233.92, "desp_pessoal": -45226.1007, "desp_adm": -32570.76, "ebitda": 151943.4419, "rec_fin": 4235.68, "desp_fin": -245.01, "lair": 155934.1119, "outros_tributos": -1075.7, "lucro_liquido": 154858.4119, "ativos": -669.99, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": 113648.4219, "outras_rec": 0.0}};
-const DFC = {"Jan-26": {"op_total": 197582.66, "entradas_op": 585487.0, "rec_financ": 7121.81, "outras_entradas": 0.0, "impostos": -125925.41, "custos": -107300.8747, "desp_pessoal": -114541.888, "desp_mkt": -20404.9474, "desp_adm": -26771.63, "desp_fin": -81.4, "investimentos": -6970.69, "financiamentos": -40130.0, "var_caixa": 150481.97, "outras_desp": 0.0}, "Fev-26": {"op_total": -6164.33, "entradas_op": 239746.99, "rec_financ": 6918.05, "outras_entradas": 130.16, "impostos": -30185.03, "custos": -57530.2846, "desp_pessoal": -77363.228, "desp_mkt": -51673.1274, "desp_adm": -35671.57, "desp_fin": -536.29, "investimentos": -982.04, "financiamentos": -40900.0, "var_caixa": -48046.37, "outras_desp": 0.0}, "Mar-26": {"op_total": -232153.27, "entradas_op": 24018.05, "rec_financ": 7582.85, "outras_entradas": 390.0, "impostos": -13082.54, "custos": -111890.9046, "desp_pessoal": -67341.138, "desp_mkt": -46790.8574, "desp_adm": -24928.79, "desp_fin": -109.94, "investimentos": -8605.49, "financiamentos": -35540.0, "var_caixa": -276298.76, "outras_desp": 0.0}, "Abr-26": {"op_total": -210404.6, "entradas_op": 108929.55, "rec_financ": 5462.78, "outras_entradas": 291.19, "impostos": -20044.82, "custos": -178881.5182, "desp_pessoal": -64475.6001, "desp_mkt": -41503.2017, "desp_adm": -20091.54, "desp_fin": -91.44, "investimentos": -18234.45, "financiamentos": -35540.0, "var_caixa": -264179.05, "outras_desp": 0.0}, "Mai-26": {"op_total": -118202.83, "entradas_op": 156280.65, "rec_financ": 2636.95, "outras_entradas": 33438.47, "impostos": -16453.26, "custos": -140782.4029, "desp_pessoal": -88592.1581, "desp_mkt": -43450.659, "desp_adm": -19924.86, "desp_fin": -475.78, "investimentos": -22665.36, "financiamentos": -35540.0, "var_caixa": -176408.19, "outras_desp": -879.78}, "Jun-26": {"op_total": -427115.02, "entradas_op": 197760.35, "rec_financ": 10199.05, "outras_entradas": 0.0, "impostos": -428529.31, "custos": -70164.4532, "desp_pessoal": -65386.1051, "desp_mkt": -48217.5417, "desp_adm": -22673.87, "desp_fin": -103.14, "investimentos": -17581.93, "financiamentos": 344460.0, "var_caixa": -100236.95, "outras_desp": 0.0}, "Jul-26": {"op_total": 2025978.87, "entradas_op": 2436441.91, "rec_financ": 8097.29, "outras_entradas": 1767.0, "impostos": -140440.28, "custos": -59219.935, "desp_pessoal": -81208.125, "desp_mkt": -98167.15, "desp_adm": -40755.91, "desp_fin": -120.6, "investimentos": -18852.32, "financiamentos": -415540.0, "var_caixa": 1591586.55, "outras_desp": -415.33}, "Ago-26": {"op_total": -252864.22, "entradas_op": 188986.29, "rec_financ": 11107.6, "outras_entradas": 2521.99, "impostos": -100270.42, "custos": -100400.1869, "desp_pessoal": -110384.1386, "desp_mkt": -114100.3445, "desp_adm": -30284.01, "desp_fin": -41.0, "investimentos": -17513.01, "financiamentos": -35540.0, "var_caixa": -305917.23, "outras_desp": 0.0}, "Set-26": {"op_total": 146389.78, "entradas_op": 462221.97, "rec_financ": 21.47, "outras_entradas": 1812.62, "impostos": -70327.31, "custos": -46415.14, "desp_pessoal": -100604.1717, "desp_mkt": -53561.1483, "desp_adm": -38021.11, "desp_fin": -27.5, "investimentos": -669.99, "financiamentos": -35540.0, "var_caixa": 110179.79, "outras_desp": -8709.9}};
-const ESTOQUE = {"Jan-26": 1089009.12, "Fev-26": 1157978.96, "Mar-26": 1242810.14, "Abr-26": 1463468.66, "Mai-26": 1269582.91, "Jun-26": 1336607.64, "Jul-26": 1305228.85, "Ago-26": 1245159.98, "Set-26": 1142634.79};
-const CAIXA = {"Jan-26": {"inicial": 856657.69, "final": 1007139.66}, "Fev-26": {"inicial": 1007139.66, "final": 959093.29}, "Mar-26": {"inicial": 959093.29, "final": 682794.53}, "Abr-26": {"inicial": 682794.53, "final": 418615.48}, "Mai-26": {"inicial": 418615.48, "final": 242207.29}, "Jun-26": {"inicial": 242207.29, "final": 141970.34}, "Jul-26": {"inicial": 141970.34, "final": 1733556.89}, "Ago-26": {"inicial": 1733556.89, "final": 1427639.66}, "Set-26": {"inicial": 1427639.66, "final": 1537819.45}};
-const PIPEDRIVE = {"erro": false, "total": 0.0, "qtd": 0, "taxa_usd": 4.9863};
-const OMIE = {"erro": false, "total": 56103.56, "qtd": 1};
-const CONTAS_RECEBER = {"erro": false, "total": 1487695.37, "qtd": 26};
-const MESES_DRE = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
-const MESES_DFC = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
-const MESES_ALL = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
+const DRE = {"Jan-26": {"receita_bruta": 122507.81, "impostos": -24062.84, "receita_liquida": 98444.97, "csp": -7529.0196, "cmc_vendas": -13874.0864, "outros_custos": -669.62, "margem_bruta": 76372.244, "desp_var": -28618.9401, "recup_desp_var": 0.0, "margem_contribuicao": 47753.3039, "desp_vendas": -20029.3573, "desp_pessoal": -83467.573, "desp_adm": -42135.6, "ebitda": -97879.2264, "rec_fin": 7121.81, "desp_fin": -279.19, "lair": -91036.6064, "outros_tributos": -48.18, "lucro_liquido": -91084.7864, "ativos": -4717.36, "servicos": -38195.0, "distribuicao_lucros": -38195.0, "resultado": -133997.1464}, "Fev-26": {"receita_bruta": 81306.67, "impostos": -18784.65, "receita_liquida": 62522.02, "csp": -7580.8846, "cmc_vendas": -6320.5872, "outros_custos": -626.5699, "margem_bruta": 47993.9782, "desp_var": -11784.96, "recup_desp_var": 877.49, "margem_contribuicao": 37086.5082, "desp_vendas": -32113.9173, "desp_pessoal": -67430.938, "desp_adm": -25478.1, "ebitda": -87936.4471, "rec_fin": 6170.72, "desp_fin": -793.16, "lair": -82558.8871, "outros_tributos": 0.0, "lucro_liquido": -82558.8871, "ativos": -982.04, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": -124080.9271}, "Mar-26": {"receita_bruta": 77325.29, "impostos": -3439.04, "receita_liquida": 73886.25, "csp": -9678.4482, "cmc_vendas": -7976.0163, "outros_custos": -324.57, "margem_bruta": 55907.2155, "desp_var": -10166.49, "recup_desp_var": 390.0, "margem_contribuicao": 46130.7255, "desp_vendas": -38814.2217, "desp_pessoal": -67346.0401, "desp_adm": -22669.25, "ebitda": -82698.7863, "rec_fin": 7582.85, "desp_fin": -193.97, "lair": -75309.9063, "outros_tributos": -9489.66, "lucro_liquido": -84799.5663, "ativos": -25788.26, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -146127.8263}, "Abr-26": {"receita_bruta": 195572.51, "impostos": -21090.76, "receita_liquida": 174481.75, "csp": -12418.6179, "cmc_vendas": -17214.0108, "outros_custos": -2195.96, "margem_bruta": 142653.1613, "desp_var": -28538.4953, "recup_desp_var": 291.19, "margem_contribuicao": 114405.856, "desp_vendas": -39862.7137, "desp_pessoal": -76526.683, "desp_adm": -17383.22, "ebitda": -19366.7608, "rec_fin": 6021.38, "desp_fin": -1110.4, "lair": -14455.7808, "outros_tributos": -569.64, "lucro_liquido": -15025.4208, "ativos": -23717.04, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": -74282.4608}, "Mai-26": {"receita_bruta": 2401385.75, "impostos": -435222.57, "receita_liquida": 1966163.18, "csp": -12060.6282, "cmc_vendas": -273379.8389, "outros_custos": -560.38, "margem_bruta": 1680162.3329, "desp_var": -14214.72, "recup_desp_var": 2458.2, "margem_contribuicao": 1668405.8129, "desp_vendas": -24730.1317, "desp_pessoal": -81963.7801, "desp_adm": -22515.92, "ebitda": 1539195.9811, "rec_fin": 2979.08, "desp_fin": -564.91, "lair": 1541610.1511, "outros_tributos": -1289.61, "lucro_liquido": 1540320.5411, "ativos": -66493.0, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 1438287.5411}, "Jun-26": {"receita_bruta": 231605.23, "impostos": -44114.96, "receita_liquida": 187490.27, "csp": -47079.87, "cmc_vendas": -11989.345, "outros_custos": -1640.87, "margem_bruta": 126780.185, "desp_var": -17509.7799, "recup_desp_var": 9539.1, "margem_contribuicao": 118809.5051, "desp_vendas": -59227.8301, "desp_pessoal": -87399.42, "desp_adm": -34811.74, "ebitda": -62629.485, "rec_fin": 1642.39, "desp_fin": -288.29, "lair": -61275.385, "outros_tributos": -96936.05, "lucro_liquido": -158211.435, "ativos": -958.68, "servicos": 344460.0, "distribuicao_lucros": -35540.0, "resultado": 185289.885}, "Jul-26": {"receita_bruta": 509319.44, "impostos": -102106.08, "receita_liquida": 407213.36, "csp": -24432.665, "cmc_vendas": -54256.2146, "outros_custos": -6529.17, "margem_bruta": 321995.3104, "desp_var": -89119.3798, "recup_desp_var": 4148.79, "margem_contribuicao": 237024.7206, "desp_vendas": -113749.6102, "desp_pessoal": -112730.5751, "desp_adm": -31988.12, "ebitda": -21443.5846, "rec_fin": 10509.93, "desp_fin": -333.56, "lair": -10638.7146, "outros_tributos": -18.75, "lucro_liquido": -10657.4646, "ativos": -17245.95, "servicos": -415540.0, "distribuicao_lucros": -35540.0, "resultado": -443443.4146}, "Ago-26": {"receita_bruta": 1169189.96, "impostos": -58706.98, "receita_liquida": 1110482.98, "csp": -22568.905, "cmc_vendas": -216046.8749, "outros_custos": -10527.1149, "margem_bruta": 861340.0851, "desp_var": -27979.78, "recup_desp_var": 2566.79, "margem_contribuicao": 835927.0951, "desp_vendas": -27910.25, "desp_pessoal": -102590.865, "desp_adm": -35181.44, "ebitda": 670244.5401, "rec_fin": 13424.24, "desp_fin": -4538.37, "lair": 679130.4101, "outros_tributos": -1081.8, "lucro_liquido": 678048.6101, "ativos": -329.53, "servicos": -35540.0, "distribuicao_lucros": -35540.0, "resultado": 642179.0801}, "Set-26": {"receita_bruta": 397141.64, "impostos": -59307.61, "receita_liquida": 337834.03, "csp": -55491.34, "cmc_vendas": -71340.4582, "outros_custos": -4138.67, "margem_bruta": 206863.5618, "desp_var": -25112.9993, "recup_desp_var": 1683.41, "margem_contribuicao": 183433.9725, "desp_vendas": -34805.59, "desp_pessoal": -81507.0307, "desp_adm": -59481.91, "ebitda": 7639.4418, "rec_fin": 4235.68, "desp_fin": -674.98, "lair": 11200.1418, "outros_tributos": -67566.82, "lucro_liquido": -56366.6782, "ativos": -669.99, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": -97576.6682}, "Out-26": {"receita_bruta": 335499.33, "impostos": -33219.48, "receita_liquida": 302279.85, "csp": -61964.435, "cmc_vendas": -24479.9389, "outros_custos": -669.64, "margem_bruta": 215165.8361, "desp_var": -3832.15, "recup_desp_var": 1518.11, "margem_contribuicao": 212851.7961, "desp_vendas": -18547.17, "desp_pessoal": -37183.705, "desp_adm": -18082.82, "ebitda": 139038.1011, "rec_fin": 2213.87, "desp_fin": -126.69, "lair": 141125.2811, "outros_tributos": -2854.18, "lucro_liquido": 138271.1011, "ativos": 669.99, "servicos": -40540.0, "distribuicao_lucros": -40540.0, "resultado": 98401.0911}};
+const DFC = {"Jan-26": {"op_total": 197582.66, "entradas_op": 585487.0, "rec_financ": 7121.81, "outras_entradas": 0.0, "impostos": -125925.41, "custos": -107300.8747, "desp_pessoal": -114541.888, "desp_mkt": -20404.9474, "desp_adm": -26771.63, "desp_fin": -81.4, "outras_desp": 0.0, "investimentos": -6970.69, "financiamentos": -40130.0, "var_caixa": 150481.97}, "Fev-26": {"op_total": -6164.33, "entradas_op": 239746.99, "rec_financ": 6918.05, "outras_entradas": 130.16, "impostos": -30185.03, "custos": -57530.2846, "desp_pessoal": -77363.228, "desp_mkt": -51673.1274, "desp_adm": -35671.57, "desp_fin": -536.29, "outras_desp": 0.0, "investimentos": -982.04, "financiamentos": -40900.0, "var_caixa": -48046.37}, "Mar-26": {"op_total": -232153.27, "entradas_op": 24018.05, "rec_financ": 7582.85, "outras_entradas": 390.0, "impostos": -13082.54, "custos": -111890.9046, "desp_pessoal": -67341.138, "desp_mkt": -46790.8574, "desp_adm": -24928.79, "desp_fin": -109.94, "outras_desp": 0.0, "investimentos": -8605.49, "financiamentos": -35540.0, "var_caixa": -276298.76}, "Abr-26": {"op_total": -210404.6, "entradas_op": 108929.55, "rec_financ": 5462.78, "outras_entradas": 291.19, "impostos": -20044.82, "custos": -178881.5182, "desp_pessoal": -64475.6001, "desp_mkt": -41503.2017, "desp_adm": -20091.54, "desp_fin": -91.44, "outras_desp": 0.0, "investimentos": -18234.45, "financiamentos": -35540.0, "var_caixa": -264179.05}, "Mai-26": {"op_total": -118202.83, "entradas_op": 156280.65, "rec_financ": 2636.95, "outras_entradas": 33438.47, "impostos": -16453.26, "custos": -140782.4029, "desp_pessoal": -88592.1581, "desp_mkt": -43450.659, "desp_adm": -19924.86, "desp_fin": -475.78, "outras_desp": -879.78, "investimentos": -22665.36, "financiamentos": -35540.0, "var_caixa": -176408.19}, "Jun-26": {"op_total": -47115.02, "entradas_op": 197760.35, "rec_financ": 10199.05, "outras_entradas": 380000.0, "impostos": -428529.31, "custos": -70164.4532, "desp_pessoal": -65386.1051, "desp_mkt": -48217.5417, "desp_adm": -22673.87, "desp_fin": -103.14, "outras_desp": 0.0, "investimentos": -17581.93, "financiamentos": -35540.0, "var_caixa": -100236.95}, "Jul-26": {"op_total": 2025978.87, "entradas_op": 2436441.91, "rec_financ": 8097.29, "outras_entradas": 1767.0, "impostos": -140440.28, "custos": -59219.935, "desp_pessoal": -81208.125, "desp_mkt": -98167.15, "desp_adm": -40755.91, "desp_fin": -120.6, "outras_desp": -415.33, "investimentos": -18852.32, "financiamentos": -415540.0, "var_caixa": 1591586.55}, "Ago-26": {"op_total": -252864.22, "entradas_op": 188986.29, "rec_financ": 11107.6, "outras_entradas": 2521.99, "impostos": -100270.42, "custos": -100400.1869, "desp_pessoal": -110384.1386, "desp_mkt": -114100.3445, "desp_adm": -30284.01, "desp_fin": -41.0, "outras_desp": 0.0, "investimentos": -17513.01, "financiamentos": -35540.0, "var_caixa": -305917.23}, "Set-26": {"op_total": 161323.6, "entradas_op": 477155.79, "rec_financ": 21.47, "outras_entradas": 1812.62, "impostos": -64523.52, "custos": -60928.83, "desp_pessoal": -100604.1717, "desp_mkt": -53561.1483, "desp_adm": -38021.11, "desp_fin": -27.5, "outras_desp": 0.0, "investimentos": -669.99, "financiamentos": -35540.0, "var_caixa": 125113.61}, "Out-26": {"op_total": -89131.27, "entradas_op": 284841.95, "rec_financ": 867.43, "outras_entradas": 24394.19, "impostos": -53092.8, "custos": -151963.91, "desp_pessoal": -76835.2107, "desp_mkt": -63789.0193, "desp_adm": -53535.65, "desp_fin": -18.25, "outras_desp": 0.0, "investimentos": 0.0, "financiamentos": -40540.0, "var_caixa": -129671.27}};
+const ESTOQUE = {"Jan-26": 1089009.12, "Fev-26": 1157978.96, "Mar-26": 1242810.14, "Abr-26": 1463468.66, "Mai-26": 1269582.91, "Jun-26": 1336607.64, "Jul-26": 1305228.85, "Ago-26": 1245159.98, "Set-26": 1142634.79, "Out-26": 1117256.59};
+const CAIXA = {"Jan-26": {"inicial": 856657.69, "final": 1007139.66}, "Fev-26": {"inicial": 1007139.66, "final": 959093.29}, "Mar-26": {"inicial": 959093.29, "final": 682794.53}, "Abr-26": {"inicial": 682794.53, "final": 418615.48}, "Mai-26": {"inicial": 418615.48, "final": 242207.29}, "Jun-26": {"inicial": 242207.29, "final": 141970.34}, "Jul-26": {"inicial": 141970.34, "final": 1733556.89}, "Ago-26": {"inicial": 1733556.89, "final": 1427639.66}, "Set-26": {"inicial": 1427639.66, "final": 1552753.27}, "Out-26": {"inicial": 1552753.27, "final": 1423082.0}};
+const PIPEDRIVE = {"erro": false, "total": 412475.0, "qtd": 6, "taxa_usd": 5.4202};
+const OMIE = {"erro": false, "total": 272175.63, "qtd": 3};
+const CONTAS_RECEBER = {"erro": false, "total": 1524351.81, "qtd": 22};
+const MESES_DRE = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26", "Out-26"];
+const MESES_DFC = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26", "Out-26"];
+const MESES_ALL = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26", "Out-26"];
 const NUM_COLABORADORES = 15;
-const CAIXA_MINIMO = 1170040.91; // 6 × Custo Fixo médio mensal dos meses COMPLETOS (Jan–Ago/26; exclui Set parcial)
-const MESES_PARCIAIS = ["Set-26"];
-const SEM_PROV_IRPJ = ["Set-26"];
+const CAIXA_MINIMO = 1134432.31;
+const MESES_PARCIAIS = ["Out-26"];
 const YOY_PAIRS = [];
-const MESES_SEM_PAR = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26"];
+const MESES_SEM_PAR = ["Jan-26", "Fev-26", "Mar-26", "Abr-26", "Mai-26", "Jun-26", "Jul-26", "Ago-26", "Set-26", "Out-26"];
 
+
+// ─── CAMPOS DERIVADOS (calculados aqui; não dependem do gerador) ────────────
+// outras_rec = (+) Outras Receitas = LAIR − EBITDA − Rec.Fin − Desp.Fin
+// mutuo_socios = parcela da linha "Serviços" que NÃO é distribuição de lucros (1.205/5.105)
+(function() {
+  MESES_DRE.forEach(function(m) {
+    var d = DRE[m]; if (!d) return;
+    if (d.outras_rec === undefined) {
+      var o = d.lair - d.ebitda - d.rec_fin - d.desp_fin;
+      d.outras_rec = Math.abs(o) < 0.05 ? 0 : Math.round(o * 100) / 100;
+    }
+    if (d.mutuo_socios === undefined) {
+      var mu = d.servicos - d.distribuicao_lucros;
+      d.mutuo_socios = Math.abs(mu) < 0.05 ? 0 : Math.round(mu * 100) / 100;
+    }
+    d.resultado_ex_mutuo = d.resultado - d.mutuo_socios;
+  });
+})();
 
 // ─── LOGIN ──────────────────────────────────────────────────────────────────
 const PASSWORD_HASH = '281472d5646276412f70b4bdf59f3ec7c312deddd64b73ea0d6f243ac249a1ce';
@@ -356,42 +371,43 @@ function computeKPIs(period) {
   const caixaFinal  = CAIXA[lastM]  ? CAIXA[lastM].final   : null;
   const caixaInicial= CAIXA[firstM] ? CAIXA[firstM].inicial : null;
   const varCaixa    = dfc ? dfc.var_caixa : null;
+  // Diferença de conciliação: variação do saldo Omie − variação líquida do DFC (deveria ser 0)
+  const gapCaixa = period.filter(function(m) { return MESES_DFC.indexOf(m) >= 0 && CAIXA[m]; })
+    .reduce(function(s,m) { return s + (CAIXA[m].final - CAIXA[m].inicial - DFC[m].var_caixa); }, 0);
 
   const nMeses = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; }).length || 1;
   const cfMedio   = cf ? cf / nMeses : null;
   const cobertura = (caixaFinal && cfMedio) ? caixaFinal / cfMedio : null;
-  const recPC     = rb ? rb / nMeses / NUM_COLABORADORES : null; // receita média mensal por colaborador
+  const recPC     = rb ? rb / NUM_COLABORADORES : null;
   const estoque   = ESTOQUE[lastM];
-  const estRatio  = (estoque && rb) ? estoque / (rb / nMeses) : null; // estoque do último mês ÷ RB média mensal do período
+  const estRatio  = (estoque && rb) ? estoque / rb : null;
 
-  // MM3: últimos 3 meses COMPLETOS dentro do período filtrado (exclui meses parciais)
-  const mesesCompl = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0 && MESES_PARCIAIS.indexOf(m) < 0; });
-  const meses3 = mesesCompl.slice(-3);
-  const mm3 = meses3.length ? meses3.reduce(function(s,m) { return s + (DRE[m] ? DRE[m].receita_bruta : 0); }, 0) / meses3.length : null;
+  const meses3 = MESES_DRE.slice(-3);
+  const mm3 = meses3.reduce(function(s,m) { return s + (DRE[m] ? DRE[m].receita_bruta : 0); }, 0) / 3;
 
-  // Variação mensal: compara os 2 últimos meses COMPLETOS do período (ignora mês parcial)
-  let varMensal = null, varMesesTxt = '';
-  const dreMs = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0 && MESES_PARCIAIS.indexOf(m) < 0; });
+  let varMensal = null, varMesesTxt = null;
+  function _vt(a,b) { return a + ' vs ' + b + (MESES_PARCIAIS.indexOf(a) >= 0 ? ' (parcial)' : ''); }
+  const dreMs = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; });
   if (dreMs.length >= 2) {
-    const mc2 = dreMs[dreMs.length-1], mp2 = dreMs[dreMs.length-2];
-    const cur  = DRE[mc2].receita_bruta;
-    const prev = DRE[mp2].receita_bruta;
+    const cur  = DRE[dreMs[dreMs.length-1]].receita_bruta;
+    const prev = DRE[dreMs[dreMs.length-2]].receita_bruta;
     varMensal = prev ? (cur - prev) / prev * 100 : null;
-    varMesesTxt = mc2 + ' vs ' + mp2;
+    varMesesTxt = _vt(dreMs[dreMs.length-1], dreMs[dreMs.length-2]);
   } else if (dreMs.length === 1) {
     const idx = MESES_DRE.indexOf(dreMs[0]);
-    if (idx > 0 && MESES_PARCIAIS.indexOf(MESES_DRE[idx-1]) < 0) {
+    if (idx > 0) {
       const cur  = DRE[dreMs[0]].receita_bruta;
       const prev = DRE[MESES_DRE[idx-1]].receita_bruta;
       varMensal = prev ? (cur - prev) / prev * 100 : null;
-      varMesesTxt = dreMs[0] + ' vs ' + MESES_DRE[idx-1];
+      varMesesTxt = _vt(dreMs[0], MESES_DRE[idx-1]);
     }
   }
 
   return { rb:rb, ll:ll, mc:mc, mcPct:mcPct, cf:cf, cfMedio:cfMedio, be:be,
            caixaFinal:caixaFinal, caixaInicial:caixaInicial, varCaixa:varCaixa,
            cobertura:cobertura, recPC:recPC, estoque:estoque, estRatio:estRatio,
-           mm3:mm3, meses3:meses3, varMensal:varMensal, varMesesTxt:varMesesTxt, hasDRE:hasDRE, period:period };
+           mm3:mm3, varMensal:varMensal, hasDRE:hasDRE, period:period,
+           meses3:meses3, varMesesTxt:varMesesTxt, gapCaixa:gapCaixa };
 }
 
 // ─── RENDER KPIs ────────────────────────────────────────────────────────────
@@ -431,7 +447,7 @@ function renderKPIs(period) {
   // 1 — Receita Bruta
   html += card('blue','Receita Bruta', k.rb?fmtR(k.rb,true):nd, k.rb?fmtR(k.rb):'', '');
   // 2 — MC
-  html += card('green','MC ajustada', k.mc?fmtR(k.mc,true):nd, k.mcPct?fmtPct(k.mcPct)+' da RB · MC oficial − Outros Tributos':'', '');
+  html += card('green','Margem de Contribuição (ajustada)', k.mc?fmtR(k.mc,true):nd, k.mcPct?fmtPct(k.mcPct)+' da RB · MC oficial − Outros Tributos':'', '');
   // 3 — LL
   html += card(k.ll!==null&&k.ll<0?'red':'green','Lucro Líquido',
     k.ll!==null?fmtR(k.ll,true):nd, k.ll!==null&&k.rb?fmtPct(k.ll/k.rb*100)+' da RB':'', '');
@@ -448,19 +464,29 @@ function renderKPIs(period) {
   html += card(k.cobertura&&k.cobertura>6?'blue':'red','Cobertura de Caixa',
     k.cobertura?fmtN(k.cobertura)+' meses':nd, 'Meta: > 6 meses', '');
   // 8 — Receita/colaborador
-  html += card('blue','Receita / Colaborador (mês)', k.recPC?fmtR(k.recPC,true):nd, 'RB média mensal ÷ '+NUM_COLABORADORES+' colaboradores', '');
+  html += card('blue','Receita / Colaborador', k.recPC?fmtR(k.recPC,true):nd, 'Base: '+NUM_COLABORADORES+' colaboradores', '');
   // 9 — Estoque/Receita
   html += card(k.estRatio&&k.estRatio>10?'red':'blue','Estoque / Receita',
-    k.estRatio?fmtN(k.estRatio)+'x':nd, k.estoque?fmtR(k.estoque,true)+' em estoque · '+(k.estRatio>10?'ALTO':'OK')+' (limite 10x RB média mensal)':'', '');
+    k.estRatio?fmtN(k.estRatio)+'x':nd, k.estoque?fmtR(k.estoque,true)+' em estoque · sobre a RB do período':'', '');
   // 10 — Geração de Caixa
   html += card(k.varCaixa!==null&&k.varCaixa>=0?'green':'red','Geração de Caixa',
-    k.varCaixa!==null?fmtR(k.varCaixa,true):nd, k.varCaixa!==null&&k.varCaixa>=0?'▲ Positivo · Entradas − Saídas':'▼ Negativo · Entradas − Saídas', '');
+    k.varCaixa!==null?fmtR(k.varCaixa,true):nd, k.varCaixa!==null&&k.varCaixa>=0?'▲ Positivo':'▼ Negativo', '');
   // 11 — MM3
-  html += card('blue','Média Móvel 3m Receita', k.mm3!==null?fmtR(k.mm3,true):nd, k.meses3.length?('Últimos '+k.meses3.length+' meses completos: '+k.meses3[0]+(k.meses3.length>1?' a '+k.meses3[k.meses3.length-1]:'')):'', '');
+  html += card('blue','Média Móvel 3m Receita', fmtR(k.mm3,true), 'Últimos 3 meses: ' + k.meses3[0] + ' a ' + k.meses3[k.meses3.length-1], '');
   // 12 — Var mensal
   html += card(k.varMensal!==null&&k.varMensal>=0?'green':'red','Variação Mensal Receita',
-    k.varMensal!==null?fmtPct(k.varMensal):nd, k.varMesesTxt?('Mês completo: '+k.varMesesTxt):'Mês a mês', '');
-  // (Variação Líquida do Caixa, Status Caixa e Status Estoque consolidados nos cards Geração de Caixa, Caixa Final e Estoque / Receita)
+    k.varMensal!==null?fmtPct(k.varMensal):nd, k.varMesesTxt ? k.varMesesTxt : 'Mês a mês', '');
+  // 13 — Var Caixa
+  html += card(k.varCaixa!==null&&k.varCaixa>=0?'teal':'red','Variação Líquida do Caixa',
+    k.varCaixa!==null?fmtR(k.varCaixa,true):nd, 'Entradas - Saídas (DFC)' + (Math.abs(k.gapCaixa) >= 1 ? ' · ⚠ saldo Omie difere ' + fmtR(k.gapCaixa,true) : ''), '');
+  // 14 — Status Caixa
+  html += card(k.caixaFinal!==null&&k.caixaFinal>=CAIXA_MINIMO?'green':'red','Status Caixa',
+    k.caixaFinal!==null?(k.caixaFinal>=CAIXA_MINIMO?'OK':'ALERTA'):nd,
+    k.caixaFinal!==null?fmtR(k.caixaFinal):'', '');
+  // 15 — Status Estoque
+  html += card(k.estRatio&&k.estRatio>10?'red':'green','Status Estoque',
+    k.estRatio?(k.estRatio>10?'ALTO':'OK'):nd,
+    k.estRatio?fmtN(k.estRatio)+'x da RB do período':'', '');
 
   document.getElementById('kpi-grid').innerHTML = html;
 }
@@ -740,12 +766,8 @@ function drawCaixa(period) {
     if (inPeriod) drawLabel(ctx, fmtR(vals[k4], true), pts[k4][0], pts[k4][1], COLORS.purple, true);
   }
 
-  // Var. total do período filtrado: Caixa final do último mês − Caixa inicial do primeiro mês
-  var pCx = allMs.filter(function(m) { return period.indexOf(m) >= 0 && CAIXA[m]; });
-  var cxFim = pCx.length ? CAIXA[pCx[pCx.length-1]].final : vals[vals.length-1];
-  var cxIni = pCx.length ? CAIXA[pCx[0]].inicial : vals[0];
   document.getElementById('ins3').textContent =
-    'Caixa Final: ' + fmtR(cxFim) + ' | Var. total do período: ' + fmtR(cxFim - cxIni);
+    'Caixa Final: ' + fmtR(vals[vals.length-1]) + ' | Var. total: ' + fmtR(vals[vals.length-1] - vals[0]);
 
   var tipData = allMs.map(function(lb, i) {
     return { x: pts[i][0], label: lb, values: [{ name:'Caixa Final', val: vals[i], color: COLORS.purple }] };
@@ -779,7 +801,7 @@ function renderCharts(period) {
     var mcPcts = dreMes.map(function(m) { return mcAdj(m) / DRE[m].receita_bruta * 100; });
     var mcAvg = dreMes.reduce(function(s,m) { return s+mcAdj(m); },0) /
                 dreMes.reduce(function(s,m) { return s+DRE[m].receita_bruta; },0) * 100;
-    drawArea('c2', dreMes, mcPcts, COLORS.teal, true, null, 'ins2', 'MC média: ' + fmtPct(mcAvg) + _parcSuffix(dreMes), parcDRE);
+    drawArea('c2', dreMes, mcPcts, COLORS.teal, true, null, 'ins2', 'MC ajustada média: ' + fmtPct(mcAvg) + _parcSuffix(dreMes), parcDRE);
 
     // C4 Estoque vs Receita
     var estMissing4 = dreMes.map(function(m) { return ESTOQUE[m] == null; });
@@ -826,7 +848,7 @@ function renderCharts(period) {
       dfcMes.map(function(m) { return DFC[m].entradas_op; }),
       dfcMes.map(function(m) { return MESES_DRE.indexOf(m)>=0 ? Math.abs(DRE[m].desp_vendas) : null; }),
       COLORS.green, COLORS.red,
-      'ins7', (dvPct7 ? 'Desp. Venda: '+fmtPct(dvPct7)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes),
+      'ins7', (dvPct7 ? 'Desp. Venda (DRE, competência) ÷ Entradas Op. (DFC, caixa): '+fmtPct(dvPct7) : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes),
       null, parcDFC);
 
     var dvPct8 = hasDRE7 ?
@@ -837,7 +859,7 @@ function renderCharts(period) {
       dfcMes.map(function(m) { return DFC[m].entradas_op; }),
       dfcMes.map(function(m) { return MESES_DRE.indexOf(m)>=0 ? Math.abs(DRE[m].desp_var) : null; }),
       COLORS.green, COLORS.amber,
-      'ins8', (dvPct8 ? 'Desp. Variáveis: '+fmtPct(dvPct8)+' das Entradas Op.' : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes),
+      'ins8', (dvPct8 ? 'Desp. Variáveis (DRE, competência) ÷ Entradas Op. (DFC, caixa): '+fmtPct(dvPct8) : 'Entradas Operacionais por mês') + _parcSuffix(dfcMes),
       null, parcDFC);
   }
 }
@@ -876,8 +898,10 @@ function renderDRE(period) {
     { label:'(-) Outros Tributos', field:'outros_tributos' },
     { label:'= Lucro Líquido', field:'lucro_liquido', result:true },
     { label:'(-) Ativos (Investimentos)', field:'ativos' },
-    { label:'(-) Serviços (PLR / Distribuição de Lucros — exclui mútuo de sócios)', field:'servicos' },
+    { label:'(-) Serviços (PLR / Distribuição de Lucros)', field:'servicos' },
+    { label:'&nbsp;&nbsp;&nbsp;↳ dos quais: mútuo de sócios (1.205 / 5.105)', field:'mutuo_socios', memo:true },
     { label:'= Resultado após Inv./Fin.', field:'resultado', result:true },
+    { label:'&nbsp;&nbsp;&nbsp;↳ Resultado ex-mútuo de sócios', field:'resultado_ex_mutuo', memo:true },
   ];
 
   var html = '<table><thead><tr><th style="min-width:240px">Linha</th>';
@@ -889,7 +913,7 @@ function renderDRE(period) {
   html += '</tr></thead><tbody>';
 
   rows.forEach(function(row) {
-    html += '<tr' + (row.result ? ' class="row-result"' : '') + '><td>' + row.label + '</td>';
+    html += '<tr' + (row.result ? ' class="row-result"' : '') + (row.memo ? ' style="font-style:italic;opacity:.8"' : '') + '><td>' + row.label + '</td>';
     cols.forEach(function(m) {
       var v = val(m, row.field);
       var dim = MESES_DRE.indexOf(m) >= 0 && selDRE.indexOf(m) < 0 && m !== 'Total';
@@ -919,7 +943,7 @@ function renderDFC(period) {
   var rows = [
     { label:'1 - OPERAÇÕES', isHeader:true, field:'op_total' },
     { label:'&nbsp;&nbsp;&nbsp;1.1 Entradas Operacionais', field:'entradas_op' },
-    { label:'&nbsp;&nbsp;&nbsp;1.2 Receitas Financeiras', field:'rec_financ' },
+    { label:'&nbsp;&nbsp;&nbsp;1.2 Entradas Não Operacionais', field:'rec_financ' },
     { label:'&nbsp;&nbsp;&nbsp;1.3 Outras Entradas', field:'outras_entradas' },
     { label:'&nbsp;&nbsp;&nbsp;2.2 Impostos', field:'impostos' },
     { label:'&nbsp;&nbsp;&nbsp;2.3 Custos', field:'custos' },
@@ -929,7 +953,7 @@ function renderDFC(period) {
     { label:'&nbsp;&nbsp;&nbsp;3.4 Despesas Financeiras', field:'desp_fin' },
     { label:'&nbsp;&nbsp;&nbsp;3.5 Outras Despesas', field:'outras_desp' },
     { label:'4 - INVESTIMENTOS', isHeader:true, field:'investimentos' },
-    { label:'5 - FINANCIAMENTOS (inclui mútuo de sócios)', isHeader:true, field:'financiamentos' },
+    { label:'5 - FINANCIAMENTOS', isHeader:true, field:'financiamentos' },
     { label:'= Variação Líquida do Caixa', field:'var_caixa', result:true },
   ];
 
@@ -963,6 +987,18 @@ function renderDFC(period) {
     var v = caixaVal(m, 'final');
     var dim = MESES_DFC.indexOf(m) >= 0 && selDFC.indexOf(m) < 0 && m !== 'Total';
     html += '<td style="opacity:' + (dim ? 0.28 : 1) + '">' + (v !== null ? fmtR(v) : 'N/D') + '</td>';
+  });
+  // Diferença de conciliação: (Caixa Final − Caixa Inicial) − Variação Líquida do DFC. Deveria ser zero.
+  function gapVal(m) {
+    if (m === 'Total') return selDFC.reduce(function(s,mm) { return s + gapVal(mm); }, 0);
+    return (CAIXA[m] && DFC[m]) ? CAIXA[m].final - CAIXA[m].inicial - DFC[m].var_caixa : null;
+  }
+  html += '</tr><tr><td style="color:var(--text2)" title="Caixa Final − Caixa Inicial − Variação Líquida do DFC. Deveria ser zero.">Diferença de conciliação (saldo Omie − DFC)</td>';
+  cols.forEach(function(m) {
+    var g = gapVal(m);
+    var dim = MESES_DFC.indexOf(m) >= 0 && selDFC.indexOf(m) < 0 && m !== 'Total';
+    var bad = g !== null && Math.abs(g) >= 1;
+    html += '<td style="opacity:' + (dim ? 0.28 : 1) + ';color:' + (bad ? 'var(--red)' : 'var(--text3)') + '">' + (g === null ? 'N/D' : (bad ? fmtR(g) : '—')) + '</td>';
   });
   html += '</tr></tbody></table>';
   document.getElementById('tbl-dfc').innerHTML = html;
@@ -1058,7 +1094,6 @@ function renderYoY() {
     { label:'(-) Despesas com Pessoal', field:'desp_pessoal' },
     { label:'(-) Despesas Administrativas', field:'desp_adm' },
     { label:'= EBITDA / Lucro Operacional', field:'ebitda', result:true },
-    { label:'(+) Outras Receitas', field:'outras_rec' },
     { label:'(+) Receitas Financeiras', field:'rec_fin' },
     { label:'(-) Despesas Financeiras', field:'desp_fin' },
     { label:'= LAIR', field:'lair', result:true },
@@ -1072,7 +1107,7 @@ function renderYoY() {
   var dfcRows = [
     { label:'1 - OPERAÇÕES', isHeader:true, field:'op_total' },
     { label:'1.1 Entradas Operacionais', field:'entradas_op' },
-    { label:'1.2 Receitas Financeiras', field:'rec_financ' },
+    { label:'1.2 Entradas Não Operacionais', field:'rec_financ' },
     { label:'1.3 Outras Entradas', field:'outras_entradas' },
     { label:'2.2 Impostos', field:'impostos' },
     { label:'2.3 Custos', field:'custos' },
@@ -1086,7 +1121,7 @@ function renderYoY() {
     { label:'= Variação Líquida do Caixa', field:'var_caixa', result:true }
   ];
 
-  var CUSTO_FIELDS = ['impostos','csp','cmc_vendas','outros_custos','desp_var','desp_vendas','desp_pessoal','desp_adm','desp_fin','outros_tributos','ativos','servicos','custos','desp_mkt','outras_desp'];
+  var CUSTO_FIELDS = ['impostos','csp','cmc_vendas','outros_custos','desp_var','desp_vendas','desp_pessoal','desp_adm','desp_fin','outras_desp','outros_tributos','ativos','servicos','custos','desp_mkt'];
 
   function ahPct(cur, prev) {
     if (prev === null || prev === undefined || prev === 0) return null;
@@ -1162,6 +1197,7 @@ function renderResultado(period) {
   var totalLL  = dreMes.reduce(function(s,m) { return s + DRE[m].lucro_liquido; }, 0);
   var totalAtv = dreMes.reduce(function(s,m) { return s + DRE[m].ativos; }, 0);
   var totalSvc = dreMes.reduce(function(s,m) { return s + DRE[m].servicos; }, 0);
+  var totalMut = dreMes.reduce(function(s,m) { return s + DRE[m].mutuo_socios; }, 0);
   var pct = totalRB ? totalRes / totalRB * 100 : null;
   var cor = totalRes >= 0 ? 'var(--green)' : 'var(--red)';
 
@@ -1175,6 +1211,7 @@ function renderResultado(period) {
       + '<div class="rb-month-label">' + m + '</div>'
       + '<div class="rb-month-val" style="color:' + c + '">' + fmtR(v) + '</div>'
       + (p !== null ? '<div class="rb-month-pct">' + fmtPct(p) + ' da RB</div>' : '')
+      + (Math.abs(DRE[m].mutuo_socios) > 0.5 ? '<div class="rb-month-pct" style="color:var(--amber)">ex-mútuo: ' + fmtR(DRE[m].resultado_ex_mutuo) + '</div>' : '')
       + '</div>';
   }).join('');
 
@@ -1186,6 +1223,10 @@ function renderResultado(period) {
       + '<span>(-) Ativos/Investimentos: ' + fmtR(totalAtv) + '</span>'
       + '<span>(-) Serviços (PLR/Dist. Lucros): ' + fmtR(totalSvc) + '</span>'
       + '</div>';
+  }
+
+  if (Math.abs(totalMut) > 0.5) {
+    compHtml += '<div class="rb-comp"><span>Inclui mútuo de sócios (1.205 / 5.105): ' + fmtR(totalMut) + '</span><span>Resultado ex-mútuo: ' + fmtR(totalRes - totalMut) + '</span></div>';
   }
 
   box.innerHTML =
@@ -1236,10 +1277,6 @@ function refresh() {
     document.getElementById('aviso-meses-graf').textContent = parciaisAtivos.join(', ');
   }
 
-  var semProv = activePeriod.filter(function(m) { return SEM_PROV_IRPJ.indexOf(m) >= 0; });
-  document.getElementById('aviso-irpj').classList.toggle('visible', semProv.length > 0);
-  if (semProv.length) document.getElementById('aviso-irpj-meses').textContent = semProv.join(', ');
-
   renderKPIs(activePeriod);
   renderResultado(activePeriod);
   renderCharts(activePeriod);
@@ -1272,6 +1309,555 @@ function showTab(evt, name) {
   document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
   evt.target.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ─── EXPORTAR PARA EXCEL (.xlsx gerado no navegador, sem bibliotecas) ──────
+// Exporta o período selecionado no filtro em 5 abas formatadas: Painel (KPIs),
+// DRE, DFC, Estoque e Resumo Mensal. O .xlsx é montado à mão: XML do
+// SpreadsheetML + ZIP sem compressão (método STORE) com CRC32.
+var XL = (function() {
+  // ── paleta (tons do dashboard ajustados para fundo claro) ──
+  var C = {
+    dark:'161820', dark2:'1C1E28', txt:'1E293B', txt2:'64748B', line:'E2E8F0', zebra:'F8FAFC',
+    soft:'F1F5F9', white:'FFFFFF', tealBg:'CCFBF1', tealTx:'0F766E', amberBg:'FEF3C7',
+    amberBd:'F59E0B', amberTx:'78350F', secHdr:'E2E8F0',
+    blue:'2563EB', green:'16A34A', red:'E11D48', amber:'D97706', orange:'EA580C',
+    indigo:'4F46E5', teal:'0D9488', purple:'7C3AED'
+  };
+  var FONT = 'Segoe UI';
+  var F = {
+    BRL:  '"R$" #,##0;[Red]-"R$" #,##0;"–"',
+    BRLN: '"R$" #,##0;-"R$" #,##0;"–"',
+    BRLS: '[Color10]"R$" #,##0;[Red]-"R$" #,##0;"–"',
+    PCT:  '0.0%;[Red]-0.0%;"–"',
+    PCTS: '[Color10]0.0%;[Red]-0.0%;"–"',
+    MESES:'0.0" meses"',
+    VEZES:'0.0"x"'
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function col(n) { var s = ''; while (n > 0) { var m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = (n - m - 1) / 26; } return s; }
+
+  // ── registro de estilos (fonts / fills / borders / numFmts / cellXfs) ──
+  function Styles() {
+    this.fonts = ['<font><sz val="10"/><color rgb="FF1E293B"/><name val="' + FONT + '"/></font>'];
+    this.fills = ['<fill><patternFill patternType="none"/></fill>', '<fill><patternFill patternType="gray125"/></fill>'];
+    this.borders = ['<border><left/><right/><top/><bottom/><diagonal/></border>'];
+    this.numFmts = []; this.xfs = ['<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'];
+    this.cache = {};
+  }
+  Styles.prototype.idx = function(list, xml) { var i = list.indexOf(xml); if (i < 0) { list.push(xml); i = list.length - 1; } return i; };
+  Styles.prototype.get = function(st) {
+    if (!st) return 0;
+    var key = JSON.stringify(st);
+    if (this.cache[key] !== undefined) return this.cache[key];
+    var f = st.font || {};
+    var fontXml = '<font>' + (f.b ? '<b/>' : '') + (f.i ? '<i/>' : '') + '<sz val="' + (f.sz || 10) + '"/>'
+      + '<color rgb="FF' + (f.color || C.txt) + '"/><name val="' + (f.name || FONT) + '"/></font>';
+    var fontId = this.idx(this.fonts, fontXml);
+    var fillId = st.fill ? this.idx(this.fills, '<fill><patternFill patternType="solid"><fgColor rgb="FF' + st.fill + '"/><bgColor indexed="64"/></patternFill></fill>') : 0;
+    var b = st.border || {}, bx = '<border>';
+    ['left','right','top','bottom'].forEach(function(sd) {
+      bx += b[sd] ? '<' + sd + ' style="' + b[sd][0] + '"><color rgb="FF' + b[sd][1] + '"/></' + sd + '>' : '<' + sd + '/>';
+    });
+    bx += '<diagonal/></border>';
+    var borderId = this.idx(this.borders, bx);
+    var nf = 0;
+    if (st.fmt) { var j = this.numFmts.indexOf(st.fmt); if (j < 0) { this.numFmts.push(st.fmt); j = this.numFmts.length - 1; } nf = 164 + j; }
+    var a = st.align || {};
+    var al = '<alignment' + (a.h ? ' horizontal="' + a.h + '"' : '') + ' vertical="' + (a.v || 'center') + '"'
+      + (a.wrap ? ' wrapText="1"' : '') + (a.indent ? ' indent="' + a.indent + '"' : '') + '/>';
+    this.xfs.push('<xf numFmtId="' + nf + '" fontId="' + fontId + '" fillId="' + fillId + '" borderId="' + borderId
+      + '" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1">' + al + '</xf>');
+    return (this.cache[key] = this.xfs.length - 1);
+  };
+  Styles.prototype.xml = function() {
+    var nf = this.numFmts.map(function(f, i) { return '<numFmt numFmtId="' + (164 + i) + '" formatCode="' + esc(f) + '"/>'; }).join('');
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+      + (nf ? '<numFmts count="' + this.numFmts.length + '">' + nf + '</numFmts>' : '')
+      + '<fonts count="' + this.fonts.length + '">' + this.fonts.join('') + '</fonts>'
+      + '<fills count="' + this.fills.length + '">' + this.fills.join('') + '</fills>'
+      + '<borders count="' + this.borders.length + '">' + this.borders.join('') + '</borders>'
+      + '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+      + '<cellXfs count="' + this.xfs.length + '">' + this.xfs.join('') + '</cellXfs>'
+      + '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'
+      + '<dxfs count="0"/></styleSheet>';
+  };
+
+  // ── planilha ──
+  function Sheet(name, tab, landscape) {
+    this.name = name; this.tab = tab; this.landscape = landscape;
+    this.cells = {}; this.heights = {}; this.widths = {}; this.merges = []; this.freeze = null; this.bars = [];
+  }
+  // v: número | texto | {f:'FÓRMULA', v:valorCache}
+  Sheet.prototype.set = function(r, c, v, st) { (this.cells[r] = this.cells[r] || {})[c] = { v: v, st: st }; };
+  Sheet.prototype.style = function(r1, c1, r2, c2, st) {
+    for (var r = r1; r <= r2; r++) for (var c = c1; c <= c2; c++) {
+      var row = (this.cells[r] = this.cells[r] || {});
+      if (row[c]) row[c].st = st; else row[c] = { v: null, st: st };
+    }
+  };
+  Sheet.prototype.merge = function(r1, c1, r2, c2) { this.merges.push(col(c1) + r1 + ':' + col(c2) + r2); };
+  Sheet.prototype.xml = function(S) {
+    var self = this;
+    var x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+      + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+      + '<sheetPr><tabColor rgb="FF' + this.tab + '"/><pageSetUpPr fitToPage="1"/></sheetPr>'
+      + '<sheetViews><sheetView showGridLines="0" workbookViewId="0">';
+    if (this.freeze) {
+      var fr = this.freeze[0], fc = this.freeze[1];
+      var pane = fc > 1 ? (fr > 1 ? 'bottomRight' : 'topRight') : 'bottomLeft';
+      x += '<pane' + (fc > 1 ? ' xSplit="' + (fc - 1) + '"' : '') + (fr > 1 ? ' ySplit="' + (fr - 1) + '"' : '')
+        + ' topLeftCell="' + col(fc) + fr + '" activePane="' + pane + '" state="frozen"/><selection pane="' + pane + '"/>';
+    }
+    x += '</sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>';
+    var wc = Object.keys(this.widths).map(Number).sort(function(a, b) { return a - b; });
+    if (wc.length) x += '<cols>' + wc.map(function(c) { return '<col min="' + c + '" max="' + c + '" width="' + self.widths[c] + '" customWidth="1"/>'; }).join('') + '</cols>';
+    x += '<sheetData>';
+    var rows = Object.keys(this.cells).map(Number);
+    Object.keys(this.heights).forEach(function(r) { if (rows.indexOf(+r) < 0) rows.push(+r); });
+    rows.sort(function(a, b) { return a - b; }).forEach(function(r) {
+      x += '<row r="' + r + '"' + (self.heights[r] ? ' ht="' + self.heights[r] + '" customHeight="1"' : '') + '>';
+      var row = self.cells[r] || {};
+      Object.keys(row).map(Number).sort(function(a, b) { return a - b; }).forEach(function(c) {
+        var cell = row[c], ref = col(c) + r, s = S.get(cell.st), v = cell.v;
+        if (v === null || v === undefined || (typeof v === 'number' && !isFinite(v))) x += '<c r="' + ref + '" s="' + s + '"/>';
+        else if (typeof v === 'number') x += '<c r="' + ref + '" s="' + s + '"><v>' + v + '</v></c>';
+        else if (typeof v === 'object') x += '<c r="' + ref + '" s="' + s + '"><f>' + esc(v.f) + '</f>' + (v.v !== undefined && isFinite(v.v) ? '<v>' + v.v + '</v>' : '') + '</c>';
+        else x += '<c r="' + ref + '" s="' + s + '" t="inlineStr"><is><t xml:space="preserve">' + esc(v) + '</t></is></c>';
+      });
+      x += '</row>';
+    });
+    x += '</sheetData>';
+    if (this.merges.length) x += '<mergeCells count="' + this.merges.length + '">' + this.merges.map(function(m) { return '<mergeCell ref="' + m + '"/>'; }).join('') + '</mergeCells>';
+    this.bars.forEach(function(b, i) {
+      x += '<conditionalFormatting sqref="' + b[0] + '"><cfRule type="dataBar" priority="' + (i + 1) + '"><dataBar>'
+        + '<cfvo type="min"/><cfvo type="max"/><color rgb="FF' + b[1] + '"/></dataBar></cfRule></conditionalFormatting>';
+    });
+    x += '<printOptions horizontalCentered="1"/>'
+      + '<pageMargins left="0.4" right="0.4" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>'
+      + '<pageSetup paperSize="9" orientation="' + (this.landscape ? 'landscape' : 'portrait') + '" fitToWidth="1" fitToHeight="0"/>'
+      + '<headerFooter><oddFooter>' + esc('&L&8&K64748BToledo && Souza Engenharia — Dashboard Executivo&R&8&K64748BPágina &P de &N') + '</oddFooter></headerFooter>'
+      + '</worksheet>';
+    return x;
+  };
+
+  // ── ZIP (STORE) ──
+  var CRC = (function() { var t = [], c; for (var n = 0; n < 256; n++) { c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crc32(u) { var c = 0xFFFFFFFF; for (var i = 0; i < u.length; i++) c = CRC[(c ^ u[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function zip(files) {
+    var enc = new TextEncoder(), parts = [], central = [], off = 0;
+    var d = new Date(), dt = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+    var tm = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+    function hdr(size) { var b = new DataView(new ArrayBuffer(size)); return b; }
+    files.forEach(function(f) {
+      var name = enc.encode(f[0]), data = enc.encode(f[1]), crc = crc32(data);
+      var h = hdr(30);
+      h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+      h.setUint16(10, tm, true); h.setUint16(12, dt, true); h.setUint32(14, crc, true);
+      h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+      parts.push(new Uint8Array(h.buffer), name, data);
+      var c = hdr(46);
+      c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+      c.setUint16(10, 0, true); c.setUint16(12, tm, true); c.setUint16(14, dt, true); c.setUint32(16, crc, true);
+      c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true);
+      c.setUint32(42, off, true);
+      central.push(new Uint8Array(c.buffer), name);
+      off += 30 + name.length + data.length;
+    });
+    var cdSize = central.reduce(function(s, p) { return s + p.length; }, 0);
+    var e = hdr(22);
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true);
+    e.setUint32(12, cdSize, true); e.setUint32(16, off, true);
+    return new Blob(parts.concat(central, [new Uint8Array(e.buffer)]), { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+
+  function workbook(sheets, title) {
+    var S = new Styles();
+    var sheetXml = sheets.map(function(sh) { return sh.xml(S); });   // antes de S.xml(): registra estilos
+    var NS = 'http://schemas.openxmlformats.org/';
+    var files = [
+      ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="' + NS + 'package/2006/content-types">'
+        + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'
+        + '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+        + sheets.map(function(s, i) { return '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'; }).join('')
+        + '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+        + '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>'],
+      ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="' + NS + 'package/2006/relationships">'
+        + '<Relationship Id="rId1" Type="' + NS + 'officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'
+        + '<Relationship Id="rId2" Type="' + NS + 'package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>'],
+      ['docProps/core.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="' + NS + 'package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/">'
+        + '<dc:title>' + esc(title) + '</dc:title><dc:creator>Dashboard Executivo</dc:creator></cp:coreProperties>'],
+      ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="' + NS + 'spreadsheetml/2006/main" xmlns:r="' + NS + 'officeDocument/2006/relationships">'
+        + '<bookViews><workbookView/></bookViews><sheets>'
+        + sheets.map(function(s, i) { return '<sheet name="' + esc(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>'; }).join('')
+        + '</sheets></workbook>'],
+      ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="' + NS + 'package/2006/relationships">'
+        + sheets.map(function(s, i) { return '<Relationship Id="rId' + (i + 1) + '" Type="' + NS + 'officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>'; }).join('')
+        + '<Relationship Id="rId' + (sheets.length + 1) + '" Type="' + NS + 'officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+      ['xl/styles.xml', S.xml()]
+    ];
+    sheetXml.forEach(function(x, i) { files.push(['xl/worksheets/sheet' + (i + 1) + '.xml', x]); });
+    return zip(files);
+  }
+
+  return { C: C, F: F, Sheet: Sheet, workbook: workbook, col: col };
+})();
+
+function exportarExcel() {
+  var C = XL.C, F = XL.F, col = XL.col;
+  var period = activePeriod.slice();
+  var semIrpj = (typeof SEM_PROV_IRPJ !== 'undefined') ? SEM_PROV_IRPJ : [];
+  var selParc = period.filter(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; });
+  var selIrpj = period.filter(function(m) { return semIrpj.indexOf(m) >= 0; });
+  var plabel = periodLabel(period);
+  var agora = new Date();
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  var exportado = pad(agora.getDate()) + '/' + pad(agora.getMonth() + 1) + '/' + agora.getFullYear() + ' ' + pad(agora.getHours()) + ':' + pad(agora.getMinutes());
+  var ft = (document.querySelector('.footer') || {}).textContent || '';
+  var apiM = ft.match(/consultad[ao]s? em ([\d\/]+ [\d:]+)/);
+  var apiTs = apiM ? apiM[1] : '—';
+  function brl(v) { return fmtR(v); }
+
+  // estilos-base
+  function font(sz, b, color, i) { return { sz: sz, b: !!b, color: color || C.txt, i: !!i }; }
+  function bd(style, color) { return [style, color]; }
+
+  function header(ws, ncols, subtitulo, comIrpj) {
+    // aba estreita (poucas colunas): quebra o texto do cabeçalho/avisos em 2 linhas
+    var wsum = 0; for (var c = 1; c <= ncols; c++) wsum += ws.widths[c] || 9;
+    var narrow = wsum < 110;
+    var dark = { fill: C.dark };
+    ws.style(1, 1, 3, ncols, dark);
+    ws.merge(1, 1, 1, ncols); ws.merge(2, 1, 2, ncols); ws.merge(3, 1, 3, ncols);
+    ws.set(1, 1, 'TOLEDO & SOUZA ENGENHARIA LTDA', { fill: C.dark, font: font(15, true, C.white), align: { indent: 1 } });
+    ws.set(2, 1, 'Dashboard Executivo  ·  ' + subtitulo, { fill: C.dark, font: font(11, false, 'C7CBDA'), align: { indent: 1 } });
+    ws.set(3, 1, 'Período: ' + plabel + (selParc.length ? ' (inclui dado parcial)' : '') + '     |     Exportado em ' + exportado
+      + '     |     Omie e Pipedrive consultados em ' + apiTs, { fill: C.dark, font: font(9, false, '9499B0'), align: { indent: 1, wrap: !!narrow } });
+    ws.heights[1] = 30; ws.heights[2] = 20; ws.heights[3] = narrow ? 32 : 20;
+    ws.style(4, 1, 4, ncols, { fill: C.teal }); ws.heights[4] = 3;
+    var r = 6, avisos = [];
+    if (selParc.length) avisos.push('⚠  Atenção: os dados de ' + selParc.join(', ') + ' ainda não estão fechados. Os números deste período são parciais e sujeitos a alteração.');
+    if (comIrpj && selIrpj.length) avisos.push('⚠  Sem provisão de IRPJ/CSLL em ' + selIrpj.join(', ') + ' — Lucro Líquido e Resultado não refletem o imposto trimestral.');
+    avisos.forEach(function(a) {
+      var b = { top: bd('medium', C.amberBd), bottom: bd('medium', C.amberBd) };
+      ws.style(r, 1, r, ncols, { fill: C.amberBg, border: b });
+      ws.merge(r, 1, r, ncols);
+      ws.set(r, 1, a, { fill: C.amberBg, font: font(10, true, C.amberTx), align: { indent: 1, wrap: true },
+        border: { top: b.top, bottom: b.bottom, left: bd('thick', C.amberBd) } });
+      ws.heights[r] = narrow ? 36 : 24;
+      r++;
+    });
+    return r + 1;
+  }
+
+  function tableHead(ws, r, labels, firstLeft) {
+    labels.forEach(function(lab, j) {
+      var parc = lab.indexOf('\nPARCIAL') >= 0;
+      ws.set(r, j + 1, lab, { fill: parc ? C.amberBd : C.dark2, font: font(10, true, parc ? '1C1917' : C.white),
+        align: { h: (j === 0 && firstLeft !== false) ? 'left' : 'center', wrap: true, indent: j === 0 ? 1 : 0 },
+        border: { bottom: bd('medium', C.teal) } });
+    });
+    ws.heights[r] = 30;
+  }
+  function mlabel(m) { return MESES_PARCIAIS.indexOf(m) >= 0 ? m + '\nPARCIAL' : m; }
+
+  // ═══ PAINEL ═══
+  var k = computeKPIs(period);
+  var ws1 = new XL.Sheet('Painel', C.teal, false);
+  [2, 14, 14, 14, 3, 14, 14, 14, 3, 14, 14, 14, 2].forEach(function(w, i) { ws1.widths[i + 1] = w; });
+  var r = header(ws1, 13, 'Painel de KPIs', true);
+  function N(v) { return (v === null || v === undefined || isNaN(v)) ? 'N/D' : v; }
+  function pctTxt(v) { return fmtPct(v); }
+  var KP = [
+    [OMIE.erro ? 'red' : 'orange', 'PEDIDOS EM PRODUÇÃO', OMIE.erro ? 'Erro API' : OMIE.total, F.BRL, OMIE.erro ? 'Erro na API' : OMIE.qtd + ' pedido(s) em aberto · Omie', 'TEMPO REAL'],
+    [PIPEDRIVE.erro ? 'red' : 'indigo', 'SUPRIMENTOS (PIPEDRIVE)', PIPEDRIVE.erro ? 'Erro API' : PIPEDRIVE.total, F.BRL,
+      PIPEDRIVE.erro ? 'Erro na API' : PIPEDRIVE.qtd + ' negócios' + (PIPEDRIVE.taxa_usd ? ' · USD/BRL ' + PIPEDRIVE.taxa_usd.toFixed(2).replace('.', ',') : ''), 'TEMPO REAL'],
+    [CONTAS_RECEBER.erro ? 'red' : 'purple', 'CONTAS A RECEBER (FATURADO)', CONTAS_RECEBER.erro ? 'Erro API' : CONTAS_RECEBER.total, F.BRL,
+      CONTAS_RECEBER.erro ? 'Erro na API' : CONTAS_RECEBER.qtd + ' títulos com NF emitida', 'TEMPO REAL'],
+    ['blue', 'RECEITA BRUTA', N(k.rb), F.BRL, k.hasDRE ? 'Soma de ' + period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; }).length + ' mês(es)' : 'DRE indisponível', ''],
+    ['green', 'MC AJUSTADA', N(k.mc), F.BRL, k.mcPct ? pctTxt(k.mcPct) + ' da RB · MC oficial − Outros Tributos' : '', ''],
+    [k.ll !== null && k.ll < 0 ? 'red' : 'green', 'LUCRO LÍQUIDO', N(k.ll), F.BRL, k.ll !== null && k.rb ? pctTxt(k.ll / k.rb * 100) + ' da RB' : '', ''],
+    [k.be && k.rb && k.rb >= k.be ? 'green' : 'red', 'BREAK-EVEN', N(k.be), F.BRL, k.be && k.rb ? (k.rb >= k.be ? '✓ Receita acima do BE' : '✗ Receita abaixo do BE') : '', ''],
+    ['amber', 'CUSTOS FIXOS', N(k.cf), F.BRL, k.cfMedio ? 'Média ' + brl(k.cfMedio) + '/mês' : '', ''],
+    [k.caixaFinal !== null && k.caixaFinal >= CAIXA_MINIMO ? 'teal' : 'red', 'CAIXA FINAL', N(k.caixaFinal), F.BRL,
+      k.caixaFinal !== null ? (k.caixaFinal >= CAIXA_MINIMO ? '✓ Acima' : '✗ Abaixo') + ' do mínimo (' + brl(CAIXA_MINIMO) + ')' : '', ''],
+    [k.cobertura && k.cobertura > 6 ? 'blue' : 'red', 'COBERTURA DE CAIXA', N(k.cobertura), F.MESES, 'Meta: acima de 6 meses', ''],
+    ['blue', 'RECEITA / COLABORADOR', N(k.recPC), F.BRL, 'RB do período ÷ ' + NUM_COLABORADORES + ' colaboradores', ''],
+    [k.estRatio && k.estRatio > 10 ? 'red' : 'blue', 'ESTOQUE / RECEITA', N(k.estRatio), F.VEZES,
+      k.estoque ? brl(k.estoque) + ' em estoque · ' + (k.estRatio > 10 ? 'ALTO' : 'OK') + ' (limite 10x)' : '', ''],
+    [k.varCaixa !== null && k.varCaixa >= 0 ? 'green' : 'red', 'GERAÇÃO DE CAIXA', N(k.varCaixa), F.BRL,
+      k.varCaixa !== null ? (k.varCaixa >= 0 ? '▲ Positivo' : '▼ Negativo') + ' · Entradas − Saídas' : '', ''],
+    ['blue', 'MÉDIA MÓVEL 3M RECEITA', N(k.mm3), F.BRL, k.meses3.length ? 'Meses: ' + k.meses3[0] + (k.meses3.length > 1 ? ' a ' + k.meses3[k.meses3.length - 1] : '') + (k.meses3.some(function(m) { return MESES_PARCIAIS.indexOf(m) >= 0; }) ? ' (inclui mês parcial)' : '') : '', ''],
+    [k.varMensal !== null && k.varMensal >= 0 ? 'green' : 'red', 'VARIAÇÃO MENSAL RECEITA', k.varMensal !== null ? k.varMensal / 100 : 'N/D', F.PCT,
+      k.varMesesTxt ? 'Mês a mês: ' + k.varMesesTxt : 'Mês a mês', '']
+  ];
+  function card(r0, c0, kp) {
+    var a = C[kp[0]], c1 = c0 + 2, line = C.line;
+    [[r0, 22], [r0 + 1, 34], [r0 + 2, 30]].forEach(function(p) { ws1.merge(p[0], c0, p[0], c1); ws1.heights[p[0]] = p[1]; });
+    for (var rr = r0; rr <= r0 + 2; rr++) for (var cc = c0; cc <= c1; cc++) {
+      ws1.style(rr, cc, rr, cc, { fill: C.zebra, border: {
+        top: rr === r0 ? bd('thick', a) : null, bottom: rr === r0 + 2 ? bd('thin', line) : null,
+        left: cc === c0 ? bd('thin', line) : null, right: cc === c1 ? bd('thin', line) : null } });
+    }
+    var bLeft = bd('thin', line);
+    ws1.set(r0, c0, kp[1] + (kp[5] ? '   ● ' + kp[5] : ''), { fill: C.zebra, font: font(8, true, a), align: { indent: 1, v: 'bottom' }, border: { top: bd('thick', a), left: bLeft } });
+    ws1.set(r0 + 1, c0, kp[2], { fill: C.zebra, fmt: kp[3], font: { sz: 18, name: 'Segoe UI Semibold', color: kp[0] === 'red' ? C.red : C.txt }, align: { h: 'left', indent: 1 }, border: { left: bLeft } });
+    ws1.set(r0 + 2, c0, kp[4], { fill: C.zebra, font: font(8, false, C.txt2), align: { indent: 1, v: 'top', wrap: true }, border: { left: bLeft, bottom: bd('thin', line) } });
+  }
+  function sec(r, txt) {
+    ws1.merge(r, 2, r, 12);
+    ws1.style(r, 2, r, 12, { border: { bottom: bd('thin', C.line) } });
+    ws1.set(r, 2, txt, { font: font(11, true), border: { bottom: bd('thin', C.line) } });
+    ws1.heights[r] = 22;
+    return r + 2;
+  }
+  var starts = [2, 6, 10];
+  r = sec(r, 'Posição em tempo real  (não afetada pelo filtro de período)');
+  for (var i = 0; i < 3; i++) card(r, starts[i], KP[i]);
+  r += 4;
+  r = sec(r, 'Indicadores do período  ·  ' + plabel);
+  KP.slice(3).forEach(function(kp, i) { if (i && i % 3 === 0) r += 4; card(r, starts[i % 3], kp); });
+  r += 5;
+
+  // Resultado após Inv./Fin.
+  var dm = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; });
+  if (dm.length) {
+    r = sec(r, 'Resultado após Investimentos / Financiamentos');
+    var hr = r;
+    [['Mês', 2, 3, 'left'], ['Resultado', 4, 6, 'right'], ['% da RB', 7, 8, 'right']].forEach(function(h) {
+      ws1.style(r, h[1], r, h[2], { fill: C.dark2 }); ws1.merge(r, h[1], r, h[2]);
+      ws1.set(r, h[1], h[0], { fill: C.dark2, font: font(9, true, C.white), align: { h: h[3], indent: 1 } });
+    });
+    ws1.heights[r] = 22;
+    dm.forEach(function(m, i) {
+      r++;
+      var bg = i % 2 ? C.zebra : C.white, base = { fill: bg, border: { bottom: bd('thin', C.line) } };
+      ws1.style(r, 2, r, 8, base);
+      ws1.merge(r, 2, r, 3); ws1.merge(r, 4, r, 6); ws1.merge(r, 7, r, 8);
+      ws1.set(r, 2, m + (MESES_PARCIAIS.indexOf(m) >= 0 ? '  (parcial)' : ''), { fill: bg, border: base.border, align: { indent: 1 } });
+      ws1.set(r, 4, DRE[m].resultado, { fill: bg, border: base.border, fmt: F.BRLS, align: { h: 'right', indent: 1 } });
+      ws1.set(r, 7, DRE[m].receita_bruta ? DRE[m].resultado / DRE[m].receita_bruta : null, { fill: bg, border: base.border, fmt: F.PCTS, align: { h: 'right', indent: 1 } });
+    });
+    r++;
+    var totRes = dm.reduce(function(s, m) { return s + DRE[m].resultado; }, 0);
+    var tb = { fill: C.tealBg, border: { top: bd('medium', C.tealTx) } };
+    ws1.style(r, 2, r, 8, tb);
+    ws1.merge(r, 2, r, 3); ws1.merge(r, 4, r, 6); ws1.merge(r, 7, r, 8);
+    ws1.set(r, 2, 'Total do período', { fill: C.tealBg, border: tb.border, font: font(10, true, C.tealTx), align: { indent: 1 } });
+    ws1.set(r, 4, { f: 'SUM(D' + (hr + 1) + ':D' + (r - 1) + ')', v: totRes }, { fill: C.tealBg, border: tb.border, fmt: F.BRLS, font: font(10, true), align: { h: 'right', indent: 1 } });
+    ws1.set(r, 7, k.rb ? totRes / k.rb : null, { fill: C.tealBg, border: tb.border, fmt: F.PCTS, font: font(10, true), align: { h: 'right', indent: 1 } });
+    ws1.heights[r] = 22;
+    r += 2;
+  }
+  ws1.merge(r, 2, r + 1, 12);
+  ws1.set(r, 2, 'Notas: Caixa mínimo de referência = 6 × Custo Fixo médio mensal (' + brl(CAIXA_MINIMO) + '). MC ajustada = MC oficial da DRE − Outros Tributos. Percentuais calculados sobre a Receita Bruta.',
+    { font: font(8, false, C.txt2, true), align: { wrap: true, v: 'top' } });
+
+  // ═══ DRE / DFC ═══
+  function finTable(ws, r, meses, rows, src, pctRb, extra, note) {
+    var nm = meses.length, ncol = nm + 2 + (pctRb ? 1 : 0);
+    var heads = ['Linha'].concat(meses.map(mlabel), ['Total'], pctRb ? ['% RB'] : []);
+    tableHead(ws, r, heads);
+    ws.set(r, nm + 2, 'Total', { fill: C.dark, font: font(10, true, C.white), align: { h: 'center', wrap: true }, border: { bottom: bd('medium', C.teal) } });
+    ws.freeze = [r + 1, 2];
+    var rbRow = null, tc = col(nm + 2), rbTot = 0;
+    rows.forEach(function(row, i) {
+      r++;
+      var res = row[2] === 1, hdr = row[2] === 2, key = row[1];
+      var bg = res ? C.tealBg : hdr ? C.secHdr : (i % 2 ? C.zebra : C.white);
+      var border = res ? { top: bd('thin', C.tealTx), bottom: bd('thin', C.tealTx) } : { bottom: bd('thin', C.line) };
+      var fmt = (res || hdr) ? F.BRL : F.BRLN;
+      ws.set(r, 1, row[0], { fill: bg, border: border, font: font(10, res || hdr, res ? C.tealTx : C.txt), align: { indent: (res || hdr) ? 1 : 3 } });
+      var tot = 0;
+      meses.forEach(function(m, j) {
+        var v = src[m] ? (src[m][key] || 0) : null; tot += v || 0;
+        ws.set(r, j + 2, v, { fill: bg, border: border, fmt: fmt, font: font(10, res || hdr) });
+      });
+      if (key === 'receita_bruta') { rbRow = r; rbTot = tot; }
+      ws.set(r, nm + 2, { f: 'SUM(B' + r + ':' + col(nm + 1) + r + ')', v: tot },
+        { fill: (res || hdr) ? bg : C.soft, border: border, fmt: fmt, font: font(10, true, res ? C.tealTx : C.txt) });
+      if (pctRb) ws.set(r, nm + 3, rbRow ? { f: 'IFERROR(' + tc + r + '/' + tc + '$' + rbRow + ',0)', v: rbTot ? tot / rbTot : 0 } : null,
+        { fill: bg, border: border, fmt: F.PCT, font: font(9, res, res ? C.tealTx : C.txt2) });
+      ws.heights[r] = (res || hdr) ? 20 : 18;
+    });
+    if (extra) r = extra(ws, r, meses, ncol);
+    if (note) {
+      r += 2; ws.merge(r, 1, r, ncol);
+      ws.set(r, 1, note, { font: font(8, false, C.txt2, true) });
+    }
+  }
+
+  var DRE_ROWS = [
+    ['(+) Receita Bruta de Vendas', 'receita_bruta', 0], ['(-) Impostos', 'impostos', 0], ['= Receita Líquida', 'receita_liquida', 1],
+    ['(-) Custo dos Serviços Prestados', 'csp', 0], ['(-) CMC das Vendas', 'cmc_vendas', 0], ['(-) Outros Custos', 'outros_custos', 0],
+    ['= Margem Bruta', 'margem_bruta', 1], ['(-) Despesas Variáveis', 'desp_var', 0], ['(+) Recuperação de Despesas Variáveis', 'recup_desp_var', 0],
+    ['= Margem de Contribuição', 'margem_contribuicao', 1], ['(-) Despesas de Vendas e Marketing', 'desp_vendas', 0],
+    ['(-) Despesas com Pessoal', 'desp_pessoal', 0], ['(-) Despesas Administrativas', 'desp_adm', 0], ['= EBITDA / Lucro Operacional', 'ebitda', 1],
+    ['(+) Outras Receitas', 'outras_rec', 0], ['(+) Receitas Financeiras', 'rec_fin', 0], ['(-) Despesas Financeiras', 'desp_fin', 0], ['= LAIR', 'lair', 1],
+    ['(-) Outros Tributos', 'outros_tributos', 0], ['= Lucro Líquido', 'lucro_liquido', 1], ['(-) Ativos (Investimentos)', 'ativos', 0],
+    ['(-) Serviços (PLR / Distribuição de Lucros)', 'servicos', 0], ['   ↳ dos quais: mútuo de sócios (1.205 / 5.105)', 'mutuo_socios', 0],
+    ['= Resultado após Inv./Fin.', 'resultado', 1], ['   ↳ Resultado ex-mútuo de sócios', 'resultado_ex_mutuo', 0]
+  ];
+  var DFC_ROWS = [
+    ['1 - OPERAÇÕES', 'op_total', 2], ['1.1 Entradas Operacionais', 'entradas_op', 0], ['1.2 Entradas Não Operacionais', 'rec_financ', 0],
+    ['1.3 Outras Entradas', 'outras_entradas', 0], ['2.2 Impostos', 'impostos', 0], ['2.3 Custos', 'custos', 0],
+    ['3.1 Despesas com Pessoal', 'desp_pessoal', 0], ['3.2 Despesas de Marketing e Vendas', 'desp_mkt', 0],
+    ['3.3 Despesas Administrativas', 'desp_adm', 0], ['3.4 Despesas Financeiras', 'desp_fin', 0], ['3.5 Outras Despesas', 'outras_desp', 0],
+    ['4 - INVESTIMENTOS', 'investimentos', 2], ['5 - FINANCIAMENTOS (inclui mútuo de sócios)', 'financiamentos', 2],
+    ['= Variação Líquida do Caixa', 'var_caixa', 1]
+  ];
+
+  function finWidths(ws, nm, pctRb) {
+    ws.widths[1] = 46; for (var j = 0; j < nm; j++) ws.widths[j + 2] = 14.5; ws.widths[nm + 2] = 16; if (pctRb) ws.widths[nm + 3] = 9;
+  }
+
+  var sheets = [ws1];
+  var mDRE = period.filter(function(m) { return MESES_DRE.indexOf(m) >= 0; });
+  if (mDRE.length) {
+    var ws2 = new XL.Sheet('DRE', C.blue, mDRE.length > 4);
+    finWidths(ws2, mDRE.length, true);
+    r = header(ws2, mDRE.length + 3, 'DRE Resumida', true);
+    finTable(ws2, r, mDRE, DRE_ROWS, DRE, true, null,
+      'Valores conforme DRE exportada do Omie (cascata oficial). Total = soma dos meses selecionados; % RB = participação sobre a Receita Bruta do período.');
+    sheets.push(ws2);
+  }
+
+  var mDFC = period.filter(function(m) { return MESES_DFC.indexOf(m) >= 0; });
+  if (mDFC.length) {
+    var ws3 = new XL.Sheet('DFC', C.purple, mDFC.length > 4);
+    finWidths(ws3, mDFC.length, false);
+    r = header(ws3, mDFC.length + 2, 'DFC Resumida', false);
+    finTable(ws3, r, mDFC, DFC_ROWS, DFC, false, function(ws, r, meses, ncol) {
+      var nm = meses.length;
+      [['Caixa Inicial', 'inicial', false], ['= Caixa Final', 'final', true]].forEach(function(cx) {
+        r++;
+        var res = cx[2], bg = res ? C.tealBg : C.white;
+        var border = { top: bd('thin', res ? C.tealTx : C.line), bottom: bd('thin', res ? C.tealTx : C.line) };
+        ws.set(r, 1, cx[0], { fill: bg, border: border, font: font(10, res, res ? C.tealTx : C.txt2), align: { indent: res ? 1 : 3 } });
+        meses.forEach(function(m, j) {
+          var v = CAIXA[m] ? CAIXA[m][cx[1]] : null;
+          ws.set(r, j + 2, v, { fill: bg, border: border, fmt: F.BRL, font: font(10, res, res && v !== null && v < CAIXA_MINIMO ? C.red : C.txt) });
+        });
+        var ref = cx[1] === 'inicial' ? 'B' : col(nm + 1);
+        var cache = cx[1] === 'inicial' ? (CAIXA[meses[0]] || {}).inicial : (CAIXA[meses[nm - 1]] || {}).final;
+        ws.set(r, nm + 2, { f: ref + r, v: cache }, { fill: bg, border: border, fmt: F.BRL, font: font(10, true, res ? C.tealTx : C.txt) });
+        ws.heights[r] = 20;
+      });
+      // Diferença de conciliação (saldo Omie − DFC)
+      r++;
+      var gb = { top: bd('thin', C.line), bottom: bd('thin', C.line) }, gTot = 0;
+      ws.set(r, 1, 'Diferença de conciliação (saldo Omie − DFC)', { fill: C.white, border: gb, font: font(10, false, C.txt2), align: { indent: 3 } });
+      meses.forEach(function(m, j) {
+        var g = (CAIXA[m] && DFC[m]) ? CAIXA[m].final - CAIXA[m].inicial - DFC[m].var_caixa : null;
+        gTot += g || 0;
+        ws.set(r, j + 2, g !== null && Math.abs(g) >= 1 ? g : 0, { fill: C.white, border: gb, fmt: F.BRL, font: font(10, false, g !== null && Math.abs(g) >= 1 ? C.red : C.txt2) });
+      });
+      ws.set(r, nm + 2, { f: 'SUM(B' + r + ':' + col(nm + 1) + r + ')', v: Math.abs(gTot) >= 1 ? gTot : 0 }, { fill: C.white, border: gb, fmt: F.BRL, font: font(10, true, Math.abs(gTot) >= 1 ? C.red : C.txt2) });
+      ws.heights[r] = 20;
+      return r;
+    }, 'Caixa Inicial = saldo Omie do último dia do mês anterior. Valores em vermelho no Caixa Final = abaixo do Caixa Mínimo (' + brl(CAIXA_MINIMO) + '). Diferença de conciliação = (Caixa Final − Caixa Inicial) − Variação Líquida do DFC; deveria ser zero.');
+    sheets.push(ws3);
+
+    // ═══ ESTOQUE ═══
+    var ws4 = new XL.Sheet('Estoque', C.amber, false);
+    [24, 24, 22, 16].forEach(function(w, i) { ws4.widths[i + 1] = w; });
+    r = header(ws4, 4, 'Posição de Estoque (CMC)', false);
+    tableHead(ws4, r, ['Período', 'CMC Total', 'Var. R$', 'Var. %']);
+    ws4.freeze = [r + 1, 1];
+    var first = r + 1;
+    mDFC.forEach(function(m, i) {
+      r++;
+      var bg = i % 2 ? C.zebra : C.white, border = { bottom: bd('thin', C.line) };
+      var v = ESTOQUE[m], idx = MESES_DFC.indexOf(m), prev = idx > 0 ? ESTOQUE[MESES_DFC[idx - 1]] : null;
+      ws4.set(r, 1, m + (MESES_PARCIAIS.indexOf(m) >= 0 ? '  (parcial)' : ''), { fill: bg, border: border, align: { indent: 1 } });
+      ws4.set(r, 2, v != null ? v : 'N/D', { fill: bg, border: border, fmt: F.BRL, font: font(10, true), align: { h: 'right' } });
+      var st = { fill: bg, border: border, align: { h: 'right' } };
+      if (v != null && prev != null) {
+        ws4.set(r, 3, i > 0 && ESTOQUE[mDFC[i - 1]] != null && MESES_DFC.indexOf(mDFC[i - 1]) === idx - 1 ? { f: 'B' + r + '-B' + (r - 1), v: v - prev } : v - prev,
+          { fill: bg, border: border, fmt: F.BRLS, align: { h: 'right' } });
+        ws4.set(r, 4, prev ? (v - prev) / prev : null, { fill: bg, border: border, fmt: F.PCTS, align: { h: 'right' } });
+      } else { ws4.set(r, 3, '—', st); ws4.set(r, 4, '—', st); }
+      ws4.heights[r] = 18;
+    });
+    ws4.bars.push(['B' + first + ':B' + r, 'F59E0B']);
+    if (mDFC.length > 1) {
+      var e0 = ESTOQUE[mDFC[0]], e1 = ESTOQUE[mDFC[mDFC.length - 1]];
+      r++;
+      var tb4 = { fill: C.tealBg, border: { top: bd('medium', C.tealTx) } };
+      ws4.set(r, 1, 'Variação do período', { fill: C.tealBg, border: tb4.border, font: font(10, true, C.tealTx), align: { indent: 1 } });
+      ws4.set(r, 2, { f: 'B' + (r - 1), v: e1 }, { fill: C.tealBg, border: tb4.border, fmt: F.BRL, font: font(10, true), align: { h: 'right' } });
+      ws4.set(r, 3, { f: 'B' + (r - 1) + '-B' + first, v: e1 - e0 }, { fill: C.tealBg, border: tb4.border, fmt: F.BRLS, font: font(10, true), align: { h: 'right' } });
+      ws4.set(r, 4, { f: 'IFERROR(C' + r + '/B' + first + ',0)', v: e0 ? (e1 - e0) / e0 : 0 }, { fill: C.tealBg, border: tb4.border, fmt: F.PCTS, font: font(10, true), align: { h: 'right' } });
+      ws4.heights[r] = 22;
+    }
+    sheets.push(ws4);
+  }
+
+  // ═══ RESUMO MENSAL ═══
+  var ws5 = new XL.Sheet('Resumo Mensal', C.green, true);
+  [18, 18, 18, 14, 12, 18, 18].forEach(function(w, i) { ws5.widths[i + 1] = w; });
+  r = header(ws5, 7, 'Resumo Mensal', false);
+  tableHead(ws5, r, ['Mês', 'Receita Bruta', 'Lucro Líquido', 'MC % (oficial)', 'LL %', 'Caixa Final', 'Var. Caixa']);
+  ws5.freeze = [r + 1, 2];
+  var f5 = r + 1, sRb = 0, sLl = 0, sMc = 0, sVc = 0;
+  period.forEach(function(m, i) {
+    r++;
+    var d = DRE[m], fl = DFC[m], cx = CAIXA[m] ? CAIXA[m].final : null;
+    var bg = i % 2 ? C.zebra : C.white, border = { bottom: bd('thin', C.line) };
+    function cs(fmt, extra) { var s = { fill: bg, border: border, align: { h: 'right' } }; if (fmt) s.fmt = fmt; if (extra) s.font = extra; return s; }
+    ws5.set(r, 1, m + (MESES_PARCIAIS.indexOf(m) >= 0 ? '  (parcial)' : ''), { fill: bg, border: border, align: { indent: 1 } });
+    if (d) {
+      sRb += d.receita_bruta; sLl += d.lucro_liquido; sMc += d.margem_contribuicao;
+      ws5.set(r, 2, d.receita_bruta, cs(F.BRL));
+      ws5.set(r, 3, d.lucro_liquido, cs(F.BRLS));
+      ws5.set(r, 4, d.receita_bruta ? d.margem_contribuicao / d.receita_bruta : null, cs(F.PCT));
+      ws5.set(r, 5, { f: 'IFERROR(C' + r + '/B' + r + ',0)', v: d.receita_bruta ? d.lucro_liquido / d.receita_bruta : 0 }, cs(F.PCTS));
+    } else { [2, 3, 4, 5].forEach(function(c) { ws5.set(r, c, 'N/D', cs()); }); }
+    ws5.set(r, 6, cx !== null ? cx : 'N/D', cs(F.BRL, font(10, true, cx !== null && cx >= CAIXA_MINIMO ? C.teal : C.red)));
+    if (fl) sVc += fl.var_caixa;
+    ws5.set(r, 7, fl ? fl.var_caixa : 'N/D', cs(F.BRLS));
+    ws5.heights[r] = 18;
+  });
+  r++;
+  var tb5 = { top: bd('medium', C.tealTx) };
+  function ts(fmt) { return { fill: C.tealBg, border: tb5, fmt: fmt, font: font(10, true), align: { h: 'right' } }; }
+  ws5.set(r, 1, 'Total selecionado', { fill: C.tealBg, border: tb5, font: font(10, true, C.tealTx), align: { indent: 1 } });
+  ws5.set(r, 2, { f: 'SUM(B' + f5 + ':B' + (r - 1) + ')', v: sRb }, ts(F.BRL));
+  ws5.set(r, 3, { f: 'SUM(C' + f5 + ':C' + (r - 1) + ')', v: sLl }, ts(F.BRLS));
+  ws5.set(r, 4, sRb ? sMc / sRb : null, ts(F.PCT));
+  ws5.set(r, 5, { f: 'IFERROR(C' + r + '/B' + r + ',0)', v: sRb ? sLl / sRb : 0 }, ts(F.PCTS));
+  var lastCx = CAIXA[period[period.length - 1]] ? CAIXA[period[period.length - 1]].final : null;
+  ws5.set(r, 6, { f: 'F' + (r - 1), v: lastCx }, ts(F.BRL));
+  ws5.set(r, 7, { f: 'SUM(G' + f5 + ':G' + (r - 1) + ')', v: sVc }, ts(F.BRLS));
+  ws5.heights[r] = 22;
+  r += 2; ws5.merge(r, 1, r, 7);
+  ws5.set(r, 1, 'Caixa Final em teal = acima do Caixa Mínimo (' + brl(CAIXA_MINIMO) + '); em vermelho = abaixo. Caixa Final do total = último mês do período.',
+    { font: font(8, false, C.txt2, true) });
+  sheets.push(ws5);
+
+  var blob = XL.workbook(sheets, 'Dashboard Executivo — Toledo & Souza');
+  var nome = 'Dashboard_Toledo_Souza_' + plabel.replace(/ a /g, '_a_').replace(/[^A-Za-z0-9_\-]+/g, '_') + '.xlsx';
+  return { blob: blob, nome: nome };
+}
+
+function baixarExcel() {
+  var btn = document.getElementById('btn-excel');
+  try {
+    var out = exportarExcel();
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(out.blob);
+    a.download = out.nome;
+    document.body.appendChild(a); a.click();
+    setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  } catch (e) {
+    console.error(e);
+    alert('Não foi possível gerar o Excel: ' + e.message);
+  }
+  if (btn) btn.blur();
 }
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
